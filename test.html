@@ -1,0 +1,2931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jhonaley</title>
+    <link rel="apple-touch-icon" sizes="57x57" href="apple-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="apple-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="apple-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="apple-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="apple-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="apple-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="apple-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="apple-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-icon-180x180.png">
+<link rel="icon" type="image/png" sizes="192x192"  href="android-icon-192x192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="manifest" href="manifest.json">
+<meta name="msapplication-TileColor" content="#ffffff">
+<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+<meta name="theme-color" content="#ffffff">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Variables for easy theme management */
+        :root {
+            --primary-dark: #1a1a1a;
+            --secondary-dark: #2c2c2c;
+            --text-light: #f0f0f0; /* Main text color */
+            --accent-color: #bb86fc; /* Accent color (purple) */
+            --transparent-bg: rgba(0, 0, 0, 0.6); /* Semi-transparent black for overlays */
+            --light-flash: rgba(255, 255, 255, 0.8); /* For lightning effect */
+        }
+
+        /* Basic reset and body styling */
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif; /* Using Inter font */
+            color: var(--text-light); /* Applies the main text color */
+            min-height: 100vh; /* Ensure body takes full viewport height */
+            background-color: var(--primary-dark); /* Fallback background color */
+            overflow: auto; /* Default to auto to allow scrolling */
+        }
+
+        /* NEW: Class to prevent body scroll without zoom out effect */
+        body.no-scroll {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            /* The 'top' property will be set dynamically in JavaScript */
+        }
+
+        /* Wrapper for all main content */
+        .main-content-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Changed to flex-start to allow content to flow from top */
+            align-items: center;
+            min-height: 100vh; /* Make wrapper take full height of viewport */
+            width: 100%; /* Ensure it spans full width */
+            padding: 20px; /* Padding for the content inside */
+            box-sizing: border-box;
+            position: relative; /* Establishes a stacking context for its children */
+            z-index: 10; /* Ensures this wrapper is above fixed backgrounds */
+        }
+
+        /* Full-screen background image */
+        .background-image {
+            position: fixed; /* Keep it fixed so it doesn't scroll with content */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* !!! IMPORTANT: REPLACE THIS WITH YOUR ACTUAL BACKGROUND IMAGE URL !!! */
+            background-image: url('bg.jpeg'); /* Placeholder, ganti dengan URL gambar Anda */
+            background-size: cover; /* Ensures the image covers the entire element */
+            background-position: center; /* Centers the image */
+            background-repeat: no-repeat;
+            z-index: -2; /* Placed below the overlay and content */
+        }
+
+        /* Semi-transparent overlay for mood enhancement */
+        .overlay {
+            position: fixed; /* Keep it fixed */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4); /* Darkens the background slightly */
+            z-index: -1; /* Above the background image, below rain and content */
+        }
+
+        /* Canvas for rain and lightning effects */
+        #rain-canvas {
+            position: fixed; /* Keep it fixed */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* Above the overlay, below the music player */
+            pointer-events: none; /* Allows mouse events to pass through to elements below */
+        }
+
+        /* Container for logo and name */
+        .header-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px; /* Space between header and toolbar */
+            z-index: 2; /* Ensure it's above background elements */
+        }
+
+        .header-info img {
+            width: 120px; /* Increased default logo size for desktop */
+            height: 120px; /* Increased default logo size for desktop */
+            border-radius: 50%; /* Make it round */
+            object-fit: cover;
+            margin-bottom: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); /* Add shadow to logo */
+            transition: transform 0.3s ease;
+        }
+
+        .header-info img:hover {
+            transform: scale(1.05);
+        }
+
+        .header-info .name {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--text-light); /* Uses main text color (white) */
+            text-shadow: 0 0 10px rgba(240, 240, 240, 0.3); /* Subtle glow */
+        }
+
+
+        /* Toolbar for "Playlist Galau", "Sosmed" and "Gmail Dot Variations" */
+        .toolbar {
+            background-color: var(--transparent-bg);
+            border-radius: 15px;
+            padding: 15px 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, opacity 0.5s ease, visibility 0.5s ease, max-height 0.5s ease, padding 0.5s ease, margin 0.5s ease;
+            z-index: 2; /* Ensure it's above other content within the wrapper */
+            max-width: 300px;
+            width: 80%;
+            text-align: center;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .toolbar:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Class to hide the toolbar completely and collapse its space */
+        .toolbar.hide {
+            opacity: 0;
+            visibility: hidden;
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+            pointer-events: none; /* Disable interaction when hidden */
+        }
+
+        .toolbar h2 {
+            margin: 0;
+            color: var(--accent-color); /* Uses accent color */
+            font-size: 1.5em;
+            letter-spacing: 1px;
+            text-shadow: 0 0 8px rgba(187, 134, 252, 0.3); /* Shadow matches original accent color */
+            cursor: pointer; /* Kursor pointer hanya pada h2 */
+            outline: none; /* Menghilangkan tanda biru saat fokus/klik */
+            -webkit-tap-highlight-color: transparent; /* Menghilangkan highlight tap pada mobile */
+        }
+
+        /* Sosmed content container for toggling visibility */
+        .sosmed-content {
+            opacity: 0;
+            visibility: hidden;
+            max-height: 0; /* Collapse height when hidden */
+            overflow: hidden;
+            transition: opacity 0.5s ease-out, max-height 0.5s ease-out, visibility 0.5s ease-out, padding 0.5s ease-out;
+            padding-top: 0; /* No padding when hidden */
+             pointer-events: none; /* Default to non-interactive */
+        }
+
+        .sosmed-content.show {
+            opacity: 1;
+            visibility: visible;
+            max-height: 400px; /* Increased max height to accommodate more icons */
+            padding-top: 15px; /* Add padding when shown */
+            pointer-events: auto; /* Make interactive when shown */
+        }
+
+        /* Styling for the Sosmed toolbar icons */
+        .sosmed-icons {
+            display: flex;
+            flex-direction: column; /* Arrange icons vertically */
+            align-items: flex-start; /* Align items to the left */
+            gap: 15px; /* Space between each social media item */
+            width: 100%; /* Take full width of parent */
+        }
+
+        .sosmed-icons a {
+            display: flex; /* Use flexbox for the entire clickable area */
+            align-items: flex-start; /* Align items to the top (icon and text group) */
+            color: var(--text-light);
+            text-decoration: none; /* Remove underline from links */
+            transition: transform 0.2s ease, color 0.3s ease;
+            width: 100%; /* Ensure link takes full width for consistent hover */
+            padding: 5px 0; /* Add some padding for click area */
+            outline: none; /* Menghilangkan tanda biru saat fokus/klik */
+            -webkit-tap-highlight-color: transparent; /* Menghilangkan highlight tap pada mobile */
+        }
+
+        .sosmed-icons a:hover {
+            transform: translateX(5px); /* Slight movement to the right on hover */
+            color: var(--accent-color); /* Change color on hover */
+        }
+
+        .sosmed-icons a svg {
+            width: 1.8em; /* Size of the social media icons */
+            height: 1.8em;
+            margin-right: 10px; /* Space between icon and text group */
+            flex-shrink: 0; /* Prevent SVG from shrinking */
+        }
+
+        /* Styling for the text group (name and synopsis) */
+        .sosmed-text-group {
+            display: flex;
+            flex-direction: column; /* Stack name and synopsis vertically */
+            text-align: left; /* Align text to the left */
+            flex-grow: 1; /* Allow text group to take available space */
+        }
+
+        .sosmed-text-group span:first-child { /* The name of the social media */
+            font-size: 1.2em; /* Larger font for the name */
+            font-weight: 600;
+            margin-bottom: 2px; /* Small space between name and synopsis */
+        }
+
+        .sosmed-synopsis {
+            font-size: 0.85em; /* Smaller font for the synopsis */
+            color: #aaa; /* Lighter color for synopsis */
+            line-height: 1.3;
+        }
+
+
+        /* Music player container styling */
+        .music-player-container {
+            background-color: var(--transparent-bg);
+            border-radius: 15px; /* Rounded corners */
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); /* Soft shadow for depth */
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1; /* Above all background elements */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, opacity 0.5s ease, visibility 0.5s ease, max-height 0.5s ease, padding 0.5s ease, margin 0.5s ease; /* Smooth transitions for showing/hiding */
+            margin-bottom: 20px; /* Space between player and synopsis */
+
+            /* Initially hidden */
+            opacity: 0;
+            visibility: hidden;
+            max-height: 0; /* Start collapsed */
+            padding-top: 0; /* No padding when hidden */
+            padding-bottom: 0; /* No padding when hidden */
+            margin-top: 0; /* No margin when hidden */
+            margin-bottom: 0; /* No margin when hidden */
+            pointer-events: none; /* Disable interaction when hidden */
+        }
+
+        .music-player-container.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            max-height: 500px; /* Adjust as needed for player content */
+            padding: 30px; /* Restore padding */
+            margin-bottom: 20px; /* Restore margin */
+            pointer-events: auto; /* Enable interaction when shown */
+        }
+
+        .music-player-container:hover {
+            transform: translateY(-5px); /* Slight lift on hover */
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7); /* Enhanced shadow on hover */
+        }
+
+        /* Playback Mode Controls Container (for sequential, repeat, repeat one) */
+        .playback-mode-controls {
+            display: flex;
+            justify-content: flex-end; /* Align to the right */
+            width: 100%;
+            padding-bottom: 15px; /* Space below the buttons */
+            box-sizing: border-box;
+            gap: 10px; /* Space between buttons */
+            position: relative; /* For positioning the tooltip */
+        }
+
+        .playback-mode-controls .control-btn {
+            background-color: var(--secondary-dark);
+            border: none;
+            border-radius: 8px;
+            padding: 8px; /* Adjusted padding for icon button */
+            color: var(--text-light);
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px; /* Fixed width for consistent button size */
+            height: 35px; /* Fixed height for consistent button size */
+            outline: none; /* Menghilangkan tanda biru saat fokus/klik */
+            -webkit-tap-highlight-color: transparent; /* Menghilangkan highlight tap pada mobile */
+        }
+
+        .playback-mode-controls .control-btn:hover {
+            background-color: #3a3a3a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .playback-mode-controls .control-btn.active {
+            background-color: var(--accent-color);
+            color: var(--primary-dark);
+            box-shadow: 0 4px 8px rgba(187, 134, 252, 0.4);
+        }
+
+        .playback-mode-controls .control-btn svg {
+            fill: currentColor;
+            width: 70%;
+            height: 70%;
+        }
+
+
+        /* Initially hide the playlist itself */
+        .playlist {
+            list-style: none; /* Remove default list bullets */
+            padding: 0;
+            margin: 0;
+            opacity: 0;
+            visibility: hidden;
+            max-height: 0; /* Collapse height when hidden */
+            overflow: hidden;
+            transition: opacity 0.5s ease-out, max-height 0.5s ease-out, visibility 0.5s ease-out;
+        }
+
+        /* Class to show the playlist */
+        .playlist.show-list {
+            opacity: 1;
+            visibility: visible;
+            max-height: 500px; /* Adjust as needed for playlist content */
+            overflow-y: auto; /* Allow scrolling if content exceeds max-height */
+        }
+
+        .song-item {
+            display: flex;
+            align-items: center; /* Align items vertically in the center */
+            justify-content: space-between; /* Distribute space between main content and controls */
+            background-color: var(--secondary-dark); /* Darker background for list items */
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Smooth transitions */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            outline: none; /* Menghilangkan tanda biru saat fokus/klik */
+            -webkit-tap-highlight-color: transparent; /* Menghilangkan highlight tap pada mobile */
+        }
+
+        .song-item:last-child {
+            margin-bottom: 0; /* No margin for the last item */
+        }
+
+        .song-item:hover {
+            background-color: #3a3a3a; /* Slightly lighter on hover */
+            transform: scale(1.02); /* Slight scale up on hover */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Styling for the currently active song */
+        .song-item.active {
+            background-color: var(--accent-color); /* Accent background when active */
+            color: var(--primary-dark); /* Dark text on accent background for contrast */
+            font-weight: 700;
+            box-shadow: 0 6px 15px rgba(187, 134, 252, 0.4); /* Accent shadow matches original accent color */
+        }
+
+        /* Container for song info and progress bar */
+        .song-main-content {
+            display: flex;
+            flex-direction: column; /* Stack song info and progress vertically */
+            flex-grow: 1; /* Allow it to take available space */
+            text-align: left;
+            margin-right: 15px; /* Space between main content and play button */
+        }
+
+        .song-info {
+            margin-bottom: 5px; /* Space between song info and progress bar */
+        }
+
+        .song-title {
+            font-size: 1.15em; /* Slightly larger for better prominence */
+            font-weight: 600; /* Bolder for titles */
+            margin-bottom: 3px; /* Small space between title and artist */
+            color: var(--text-light); /* Ensure title color is consistent */
+        }
+
+        .song-artist {
+            font-size: 0.9em; /* Slightly smaller for artist name */
+            font-weight: 400; /* Regular weight for artist */
+            color: #ccc; /* Lighter color for artist name */
+        }
+
+        .song-item.active .song-title,
+        .song-item.active .song-artist {
+            color: var(--primary-dark); /* Dark text for active song */
+        }
+
+        /* Progress Area Styling */
+        .song-progress-area {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Align progress bar and time to the left */
+            width: 100%;
+        }
+
+        .progress-bar {
+            -webkit-appearance: none; /* Remove default styling for Chrome/Safari */
+            appearance: none;
+            width: 100%;
+            height: 6px; /* Height of the progress bar track */
+            background: rgba(255, 255, 255, 0.2); /* Light transparent track */
+            border-radius: 3px;
+            outline: none; /* Remove outline on focus */
+            cursor: pointer;
+            margin-bottom: 5px; /* Space between progress bar and time display */
+        }
+
+        /* Style for the progress bar thumb (draggable part) */
+        .progress-bar::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px; /* Size of the thumb */
+            height: 16px;
+            background: var(--accent-color); /* Accent color for the thumb */
+            border-radius: 50%; /* Make it round */
+            cursor: grab;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .progress-bar::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            cursor: grab;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .progress-bar::-webkit-slider-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+
+        .progress-bar::-moz-range-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+
+        /* Style for the filled part of the track (before the thumb) */
+        .progress-bar::-webkit-slider-runnable-track {
+            background: linear-gradient(to right, var(--accent-color) var(--progress-value, 0%), rgba(255, 255, 255, 0.2) var(--progress-value, 0%));
+            border-radius: 3px;
+        }
+
+        .progress-bar::-moz-range-track {
+            background: linear-gradient(to right, var(--accent-color) var(--progress-value, 0%), rgba(255, 255, 255, 0.2) var(--progress-value, 0%));
+            border-radius: 3px;
+        }
+
+        .time-duration {
+            font-size: 0.8em;
+            color: #aaa; /* Lighter color for time display */
+            width: 100%;
+            text-align: right; /* Align time to the right */
+        }
+
+        .song-item.active .time-duration {
+            color: var(--primary-dark); /* Dark text for active song */
+        }
+
+
+        .controls {
+            display: flex;
+            align-items: center;
+        }
+
+        .play-pause-btn {
+            background: none;
+            border: none;
+            color: var(--text-light); /* Uses main text color */
+            font-size: 1.5em; /* Base font size for icons */
+            cursor: pointer;
+            margin-left: 15px; /* Space between progress area and button */
+            transition: color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+            padding: 0; /* Remove default button padding */
+            flex-shrink: 0;
+            outline: none; /* Menghilangkan tanda biru saat fokus/klik */
+            -webkit-tap-highlight-color: transparent; /* Menghilangkan highlight tap pada mobile */
+        }
+
+        .song-item.active .play-pause-btn {
+            color: var(--primary-dark); /* Dark color for button when active */
+        }
+
+        .play-pause-btn:hover {
+            color: var(--accent-color); /* Uses accent color on hover */
+            transform: scale(1.1); /* Slight scale up on hover */
+        }
+
+        .song-item.active .play-pause-btn:hover {
+            /* Replaced SASS darken with a fixed color */
+            color: #000000; /* A very dark color for contrast */
+        }
+
+        /* Synopsis Container Styling */
+        .synopsis-container {
+            background-color: var(--transparent-bg);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            max-width: 450px;
+            width: 90%;
+            text-align: left;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1;
+            opacity: 0; /* Initially hidden */
+            transform: translateY(20px); /* Initially slightly below */
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out; /* Smooth appearance */
+            pointer-events: none; /* Allow clicks to pass through when hidden */
+        }
+
+        .synopsis-container.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .synopsis-container h3 {
+            margin-top: 0;
+            color: var(--accent-color);
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .synopsis-text {
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: var(--text-light);
+        }
+
+        .spotify-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spotify-link a {
+            color: #1DB950; /* Spotify green */
+            text-decoration: none;
+            font-weight: 700;
+            padding: 10px 20px;
+            border: 2px solid #1DB950;
+            border-radius: 30px;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            outline: none; /* Menghilangkan tanda biru saat fokus/klik */
+            -webkit-tap-highlight-color: transparent; /* Menghilangkan highlight tap pada mobile */
+        }
+
+        .spotify-link a:hover {
+            background-color: #1DB950;
+            color: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        /* Tooltip Styling */
+        .mode-tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px; /* Reduced padding */
+            border-radius: 6px; /* Slightly smaller border-radius */
+            font-size: 0.75em; /* Smaller font size */
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none; /* Ensure it doesn't block clicks */
+            z-index: 100; /* Ensure it's on top */
+            transform-origin: bottom center; /* For smooth scaling from bottom */
+        }
+
+        .mode-tooltip.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mode-tooltip::before {
+            content: '';
+            position: absolute;
+            bottom: -8px; /* Position below the tooltip content */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent; /* Half of pointer base width */
+            border-right: 8px solid transparent; /* Half of pointer base width */
+            border-top: 8px solid rgba(0, 0, 0, 0.8); /* Pointer color matches tooltip background */
+        }
+
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            .header-info img {
+                width: 150px; /* Even larger for mobile */
+                height: 150px; /* Even larger for mobile */
+            }
+            .header-info .name {
+                font-size: 2em; /* Adjusted for mobile */
+            }
+            .music-player-container, .synopsis-container, .toolbar {
+                padding: 15px 20px; /* Adjust padding for toolbars on smaller screens */
+            }
+            .synopsis-text {
+                font-size: 0.9em;
+            }
+            .toolbar h2 {
+                font-size: 1.2em;
+            }
+            .sosmed-icons a svg {
+                width: 1.5em; /* Adjust icon size for smaller screens */
+                height: 1.5em;
+            }
+            .sosmed-text-group span:first-child {
+                font-size: 1.1em; /* Adjust name font size for smaller screens */
+            }
+            .sosmed-synopsis {
+                font-size: 0.8em; /* Adjust synopsis font size for smaller screens */
+            }
+            .song-title {
+                font-size: 1.1em; /* Adjusted for smaller screens */
+            }
+            .song-artist {
+                font-size: 0.85em; /* Adjusted for smaller screens */
+            }
+            .playback-mode-controls .control-btn {
+                width: 30px;
+                height: 30px;
+                padding: 5px;
+            }
+            .mode-tooltip {
+                font-size: 0.7em; /* Even smaller on mobile */
+                padding: 4px 6px;
+            }
+            .progress-bar {
+                height: 5px; /* Slightly thinner on mobile */
+            }
+            .progress-bar::-webkit-slider-thumb,
+            .progress-bar::-moz-range-thumb {
+                width: 14px; /* Smaller thumb on mobile */
+                height: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            .header-info img {
+                width: 120px; /* Adjusted for very small screens */
+                height: 120px; /* Adjusted for very small screens */
+            }
+            .header-info .name {
+                font-size: 1.8em; /* Adjusted for very small screens */
+            }
+            .music-player-container, .synopsis-container, .toolbar {
+                padding: 10px 15px; /* Further adjust padding for toolbars on very small screens */
+            }
+            .synopsis-text {
+                font-size: 0.85em;
+            }
+            .toolbar h2 {
+                font-size: 1em;
+            }
+            .sosmed-icons a svg {
+                width: 1.2em; /* Adjust icon size for very small screens */
+                height: 1.2em;
+            }
+            .sosmed-text-group span:first-child {
+                font-size: 1em; /* Adjust name font size for very small screens */
+            }
+            .sosmed-synopsis {
+                font-size: 0.75em; /* Smallest on very small screens */
+                padding: 3px 5px;
+            }
+            .song-title {
+                font-size: 1em; /* Adjusted for very small screens */
+            }
+            .song-artist {
+                font-size: 0.8em; /* Adjusted for very small screens */
+            }
+            .playback-mode-controls {
+                gap: 8px; /* Smaller gap on very small screens */
+            }
+            .playback-mode-controls .control-btn {
+                width: 25px;
+                height: 25px;
+                padding: 3px;
+            }
+            .mode-tooltip {
+                font-size: 0.65em; /* Smallest on very small screens */
+                padding: 3px 5px;
+            }
+            .progress-bar {
+                height: 4px; /* Even thinner on very small mobile */
+            }
+            .progress-bar::-webkit-slider-thumb,
+            .progress-bar::-moz-range-thumb {
+                width: 12px; /* Even smaller thumb on very small mobile */
+                height: 12px;
+            }
+        }
+
+        /* Styles for Gmail Dot Variations */
+        .gmail-content {
+            opacity: 0;
+            visibility: hidden;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 0.5s ease-out, max-height 0.5s ease-out, visibility 0.5s ease-out, padding 0.5s ease-out;
+            padding-top: 0;
+            pointer-events: none; /* Default to non-interactive */
+        }
+
+        .gmail-content.show {
+            opacity: 1;
+            visibility: visible;
+            max-height: 500px; /* Adjust as needed for generated emails */
+            overflow-y: auto; /* Allow scrolling for Gmail content */
+            padding-top: 15px;
+            pointer-events: auto; /* Make interactive when shown */
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        .text-input {
+            flex-grow: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--secondary-dark);
+            background-color: var(--secondary-dark);
+            color: var(--text-light);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95em;
+            box-sizing: border-box;
+        }
+
+        .text-input::placeholder {
+            color: #888;
+        }
+
+        .text-input:focus {
+            outline: none; /* Menghilangkan tanda biru saat fokus */
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.3);
+        }
+
+        .action-btn {
+            background-color: var(--accent-color);
+            color: var(--primary-dark);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            flex-shrink: 0;
+            outline: none; /* Menghilangkan tanda biru saat fokus/klik */
+            -webkit-tap-highlight-color: transparent; /* Menghilangkan highlight tap pada mobile */
+        }
+
+        .action-btn:hover {
+            background-color: #a06dfa; /* Slightly darker accent */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .generated-emails-list {
+            max-height: 300px; /* Scrollable area for emails */
+            overflow-y: auto;
+            width: 100%;
+            text-align: left;
+            padding-right: 5px; /* Space for scrollbar */
+            margin-bottom: 10px; /* Reduced margin to make space for count */
+        }
+
+        .generated-email-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--secondary-dark);
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            word-break: break-all; /* Break long emails */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .generated-email-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .generated-email-item .email-text {
+            flex-grow: 1;
+            margin-right: 10px;
+            color: var(--text-light);
+        }
+
+        .copy-btn {
+            background-color: #4CAF50; /* Green for copy */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            flex-shrink: 0;
+            outline: none; /* Menghilangkan tanda biru saat fokus/klik */
+            -webkit-tap-highlight-color: transparent; /* Menghilangkan highlight tap pada mobile */
+        }
+
+        .copy-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Style for total count display */
+        .gmail-total-count-display {
+            font-size: 0.85em;
+            color: #ccc;
+            text-align: center;
+            width: 100%;
+            margin-bottom: 10px; /* Space between count and copy all button */
+        }
+
+        .copy-all-gmail-btn {
+            width: 100%;
+            margin-top: 0; /* Adjusted margin as count is now above */
+        }
+        /* Responsive adjustments for Gmail section */
+        @media (max-width: 480px) {
+            .input-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .text-input, .action-btn {
+                width: 100%;
+            }
+            .generated-email-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .generated-email-item .email-text {
+                margin-right: 0;
+                margin-bottom: 5px;
+            }
+        }
+
+        /* Modal Styles for Gmail Explanation */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8); /* Darker overlay */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* On top of everything */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: var(--secondary-dark);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: var(--text-light);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-content h3 {
+            color: var(--accent-color);
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .modal-content p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        .modal-content ul {
+            list-style: disc;
+            text-align: left;
+            margin: 0 auto 20px auto;
+            padding-left: 20px;
+            max-width: 80%; /* Adjust width for list */
+        }
+
+        .modal-content ul li {
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+
+        .modal-content .action-btn {
+            margin-top: 20px;
+            padding: 12px 25px;
+            font-size: 1em;
+        }
+
+        /* Responsive adjustments for modal */
+        @media (max-width: 768px) {
+            .modal-content {
+                padding: 20px;
+                max-width: 95%;
+            }
+            .modal-content h3 {
+                font-size: 1.5em;
+            }
+            .modal-content p, .modal-content ul li {
+                font-size: 0.9em;
+            }
+        }
+
+        /* --- NEW: Gemini AI Specific Styles --- */
+        .gemini-ai-content {
+            opacity: 0;
+            visibility: hidden;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 0.5s ease-out, max-height 0.5s ease-out, visibility 0.5s ease-out, padding 0.5s ease-out;
+            padding-top: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            pointer-events: none; /* Default to non-interactive */
+        }
+
+        .gemini-ai-content.show {
+            opacity: 1;
+            visibility: visible;
+            max-height: 600px; /* Adjust as needed for content */
+            overflow-y: auto; /* Allow scrolling for Gemini AI content */
+            padding-top: 15px;
+            pointer-events: auto; /* Make interactive when shown */
+        }
+
+        .gemini-ai-content textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--secondary-dark);
+            background-color: var(--secondary-dark);
+            color: var(--text-light);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95em;
+            box-sizing: border-box;
+            resize: vertical; /* Allow vertical resizing */
+            min-height: 80px; /* Minimum height for textarea */
+        }
+
+        .gemini-ai-content textarea::placeholder {
+            color: #888;
+        }
+
+        .gemini-ai-content textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.3);
+        }
+
+        .gemini-ai-content .action-btn {
+            width: 100%;
+            margin-top: 0; /* No extra margin as gap handles it */
+        }
+
+        .gemini-ai-response {
+            background-color: var(--secondary-dark);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: left;
+            font-size: 0.9em;
+            color: var(--text-light);
+            max-height: 300px; /* Scrollable area for response */
+            overflow-y: auto;
+            white-space: pre-wrap; /* Preserve whitespace and break lines */
+            word-wrap: break-word; /* Break long words */
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            position: relative; /* For loading indicator */
+        }
+
+        .gemini-ai-response.loading::before {
+            content: 'Generating...';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        /* --- NEW: Buy Nokos Specific Styles --- */
+        .buy-nokos-content {
+            opacity: 0;
+            visibility: hidden;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 0.5s ease-out, max-height 0.5s ease-out, visibility 0.5s ease-out, padding 0.5s ease-out;
+            padding-top: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            pointer-events: none; /* Default to non-interactive */
+        }
+
+        .buy-nokos-content.show {
+            opacity: 1;
+            visibility: visible;
+            max-height: 600px; /* Adjust as needed for content */
+            overflow-y: auto; /* ADDED: Allow scrolling for Buy Nokos content */
+            padding-top: 15px;
+            pointer-events: auto; /* Make interactive when shown */
+        }
+
+        .buy-nokos-content .form-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .buy-nokos-content label {
+            font-size: 0.9em;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .buy-nokos-content select,
+        .buy-nokos-content input[type="number"],
+        .buy-nokos-content input[type="text"] { /* ADDED: style for text input */
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--secondary-dark);
+            background-color: var(--secondary-dark);
+            color: var(--text-light);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95em;
+            box-sizing: border-box;
+            -webkit-appearance: none; /* Remove default arrow on select */
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        .buy-nokos-content select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f0f0f0'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+        }
+
+        .buy-nokos-content select:focus,
+        .buy-nokos-content input[type="number"]:focus,
+        .buy-nokos-content input[type="text"]:focus { /* ADDED: focus style for text input */
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.3);
+        }
+
+        .buy-nokos-content .price-display {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: var(--accent-color);
+            text-align: center;
+            width: 100%;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        .buy-nokos-content .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .buy-nokos-content .payment-method-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: var(--secondary-dark);
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .buy-nokos-content .payment-method-item:hover {
+            background-color: #3a3a3a;
+        }
+
+        .buy-nokos-content .payment-method-item input[type="radio"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+            outline: none;
+            cursor: pointer;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .buy-nokos-content .payment-method-item input[type="radio"]:checked {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .buy-nokos-content .payment-method-item input[type="radio"]:checked::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary-dark);
+            border-radius: 50%;
+        }
+
+        .buy-nokos-content .payment-method-item label {
+            margin: 0;
+            font-weight: 400;
+            cursor: pointer;
+            flex-grow: 1;
+        }
+
+        .buy-nokos-content .payment-info {
+            background-color: var(--secondary-dark);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            font-size: 0.95em;
+            color: var(--text-light);
+            margin-bottom: 15px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .buy-nokos-content .payment-info strong {
+            color: var(--accent-color);
+        }
+
+        .buy-nokos-content .whatsapp-proof-btn {
+            width: 100%;
+            background-color: #25D366; /* WhatsApp green */
+            color: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .buy-nokos-content .whatsapp-proof-btn:hover {
+            background-color: #1DA851; /* Darker green */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .buy-nokos-content .whatsapp-proof-btn svg {
+            width: 1.2em;
+            height: 1.2em;
+            fill: currentColor;
+        }
+
+        /* Styles for file input and image preview */
+        .buy-nokos-content input[type="file"] {
+            padding: 10px;
+            background-color: var(--secondary-dark);
+            border: 1px solid var(--secondary-dark);
+            border-radius: 8px;
+            color: var(--text-light);
+            cursor: pointer;
+        }
+
+        .buy-nokos-content input[type="file"]::-webkit-file-upload-button {
+            background-color: var(--accent-color);
+            color: var(--primary-dark);
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .buy-nokos-content input[type="file"]::-webkit-file-upload-button:hover {
+            background-color: #a06dfa;
+        }
+
+        .buy-nokos-content .image-preview {
+            max-width: 100%;
+            max-height: 150px; /* Limit preview height */
+            margin-top: 10px;
+            border-radius: 8px;
+            object-fit: contain; /* Ensure image fits without cropping */
+            display: none; /* Hidden by default */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* NEW: QRIS Image Display Styles */
+        .qris-display-container {
+            background-color: var(--secondary-dark);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 15px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .qris-display-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .qris-display-container p {
+            margin: 0;
+            font-size: 0.9em;
+            color: #ccc;
+        }
+
+        /* Style for the new song selection dropdown */
+        .song-selector-container {
+            margin-bottom: 20px; /* Space below the selector */
+            width: 100%;
+            text-align: left; /* Align label and select to left */
+        }
+
+        .song-selector-container label {
+            display: block; /* Make label take full width and put select on next line */
+            margin-bottom: 8px; /* Space between label and select */
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        /* New Modal for Payment Confirmation */
+        #payment-confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000; /* Higher than other modals */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        #payment-confirm-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #payment-confirm-modal .modal-content {
+            padding: 25px;
+            max-width: 400px;
+        }
+
+        #payment-confirm-modal .modal-content h3 {
+            font-size: 1.6em;
+            margin-bottom: 15px;
+        }
+
+        #payment-confirm-modal .modal-content p {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        #payment-confirm-modal .modal-content .payment-details {
+            background-color: var(--primary-dark);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: left;
+            font-size: 0.85em;
+            line-height: 1.5;
+        }
+
+        #payment-confirm-modal .modal-content .payment-details strong {
+            color: var(--accent-color);
+        }
+
+        #payment-confirm-modal .modal-content .button-group {
+            display: flex;
+            justify-content: space-around;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        #payment-confirm-modal .modal-content .action-btn {
+            flex-grow: 1;
+            padding: 12px 15px;
+            font-size: 0.95em;
+        }
+
+        #payment-confirm-modal .modal-content .action-btn.cancel-btn {
+            background-color: #666;
+        }
+
+        #payment-confirm-modal .modal-content .action-btn.cancel-btn:hover {
+            background-color: #888;
+        }
+
+        /* NEW: Generic Status Modal Styles */
+        #status-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000; /* Highest z-index */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        #status-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #status-modal .modal-content {
+            padding: 25px;
+            max-width: 350px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        #status-modal .modal-content h3 {
+            font-size: 1.5em;
+            margin-bottom: 0;
+        }
+
+        #status-modal .modal-content .message {
+            font-size: 1em;
+            text-align: center;
+            line-height: 1.5;
+            color: var(--text-light);
+        }
+
+        #status-modal .modal-content .action-btn {
+            width: 100px; /* Fixed width for the OK button */
+            padding: 10px;
+        }
+
+        /* Status colors */
+        #status-modal .modal-content.success h3 {
+            color: #25D366; /* WhatsApp green */
+        }
+        #status-modal .modal-content.success .message {
+            color: #66ff66;
+        }
+
+        #status-modal .modal-content.error h3 {
+            color: #ff6b6b; /* Red */
+        }
+        #status-modal .modal-content.error .message {
+            color: #ff6b6b;
+        }
+
+        /* Styles for Video & Audio Downloader */
+        .downloader-content {
+            opacity: 0;
+            visibility: hidden;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 0.5s ease-out, max-height 0.5s ease-out, visibility 0.5s ease-out, padding 0.5s ease-out;
+            padding-top: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            pointer-events: none;
+        }
+
+        .downloader-content.show {
+            opacity: 1;
+            visibility: visible;
+            max-height: 600px;
+            overflow-y: auto;
+            padding-top: 15px;
+            pointer-events: auto;
+        }
+
+        .downloader-content .text-input {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .downloader-content .action-btn {
+            width: 100%;
+            margin-top: 0;
+        }
+
+        .download-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .download-option-item {
+            background-color: var(--secondary-dark);
+            border-radius: 8px;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+            color: var(--text-light);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .download-option-item a {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 0.8em;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+
+        .download-option-item a:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-image"></div>
+    <div class="overlay"></div>
+
+    <canvas id="rain-canvas"></canvas>
+
+    <div class="main-content-wrapper">
+        <div class="header-info">
+            <img src="https://l.top4top.io/p_3436l5dq80.png" alt="Logo Profil" onerror="this.onerror=null;this.src='https://placehold.co/80x80/AAAAAA/FFFFFF?text=Logo';" />
+            <span class="name">Jhonaley Barbosa</span>
+        </div>
+
+        <div class="toolbar" id="playlist-toolbar">
+            <h2 id="playlist-toolbar-header">Playlist Galau</h2>
+        </div>
+
+        <div class="toolbar" id="sosmed-toolbar">
+            <h2 id="sosmed-toolbar-header">Sosmed</h2>
+            <div class="sosmed-content" id="sosmed-content">
+                <div class="sosmed-icons">
+                    <a href="https://wa.me/6285692062007" target="_blank" aria-label="WhatsApp">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor">
+                            <path d="M380.9 97.1C339.4 55.6 283.9 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 222-99.6 222-222 0-60.3-23.3-116.9-65.4-158.9zM223.9 448H224c34.9 0 69-10.1 98.6-29.5l7.1-4.2 84.2 22-22-84.2-4.2-7.1c19.4-29.5 29.5-63.6 29.5-98.6 0-101.9-82.8-184.7-184.7-184.7-101.9 0-184.7 82.8-184.7 184.7 0 101.8 82.9 184.6 184.7 184.6zm-61.7-110.8c-4.1-2.3-24.5-12.1-28.3-13.5-3.8-1.4-6.5-2.3-9.2 2.3-2.7 4.6-10.5 13.5-12.7 16.2-2.3 2.3-4.6 2.5-8.5.2-3.9-2.3-16.4-6-31.2-19.3-11.5-10.3-19.3-23.1-21.5-26.8-2.3-3.8-.2-3.6 2-5.9 1.8-1.8 4.1-4.6 6.5-6.9 2.3-2.3 3.1-4.1 4.6-6.5 1.5-2.3.8-4.3-.4-6.5-1.2-2.3-9.2-22.1-12.7-30.2-3.6-7.9-7.3-6.7-10.1-6.7-2.7 0-5.9-.4-9.2-.4-3.2 0-8.5 1.2-13 5.9-4.5 4.6-17.5 17.1-17.5 41.7 0 24.6 18 48.3 20.5 51.9 2.5 3.6 34.1 52.3 82.4 73.1 24.7 10.5 44.1 16.9 59.5 21.8 21.3 6.9 38.3 5.7 52.9 3.5 14.5-2.3 35.5-14.5 40.7-28.6 5.3-14 5.3-26 3.8-28.6-1.4-2.5-5.3-4-11.7-7.1z"/>
+                        </svg>
+                        <div class="sosmed-text-group">
+                            <span>WhatsApp</span>
+                            <span class="sosmed-synopsis">Kirim pesan langsung untuk pertanyaan atau obrolan.</span>
+                        </div>
+                    </a>
+                    <a href="https://instagram.com/danangvalentp" target="_blank" aria-label="Instagram">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor">
+                            <path d="M224.1 142.7c-25.4 0-46.1 20.7-46.1 46.1C178 214.2 198.7 235 224.1 235c25.4 0 46.1-20.7 46.1-46.1S249.5 142.7 224.1 142.7zm0 189c-45.4 0-82.1-36.7-82.1-82.1 0-45.4 36.7-82.1 82.1-82.1 45.4 0 82.1 36.7 82.1 82.1 0 45.3-36.7 82.1-82.1 82.1zM386.5 389c-3.1 0-6.1-.2-9.1-.5-13.4-1.5-26.6-4.4-39.6-8.8-19.4-6.4-38.3-14.7-56.6-24.9-18.3-10.1-35.8-21.3-52.1-33.6-16.3-12.3-31.7-25.9-45.9-40.4-14.2-14.5-27.2-29.8-39-45.9-11.8-16.1-22.3-32.9-31.5-50.4-9.2-17.5-17.2-35.6-24-54.2-6.8-18.6-12.2-37.7-16.2-57.2-4-19.5-6.7-39.2-8.1-59.1-1.4-19.9-1.9-40-1.5-60.1 0-3.1.2-6.1.5-9.1 1.5-13.4 4.4-26.6 8.8-39.6 6.4-19.4 14.7-38.3 24.9-56.6 10.1-18.3 21.3-35.8-33.6-52.1-12.3-16.3-25.9-31.7-40.4-45.9-14.2-14.5-27.2-29.8-39-45.9zM224.1 321.8c-25.4 0-46.1-20.7-46.1-46.1 0-25.4 20.7-46.1 46.1-46.1 25.4 0 46.1 20.7 46.1 46.1 0 25.3-20.7 46.1-46.1 46.1z"/>
+                        </svg>
+                        <div class="sosmed-text-group">
+                            <span>Instagram</span>
+                            <span class="sosmed-synopsis">Lihat momen dan cerita terbaru saya.</span>
+                        </div>
+                    </a>
+                    <a href="https://facebook.com/D.VALTP" target="_blank" aria-label="Facebook">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
+                            <path d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.27c-30.81 0-40.42 19.12-40.42 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z"/>
+                        </svg>
+                        <div class="sosmed-text-group">
+                            <span>Facebook</span>
+                            <span class="sosmed-synopsis">Kunjungi profil Facebook pribadi saya.</span>
+                        </div>
+                    </a>
+                    <a href="https://t.me/danangvalentp" target="_blank" aria-label="Telegram">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" fill="currentColor">
+                            <path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm121.8 169.9l-40.7 191.8c-3 13.6-11.1 16.9-22.4 10.5l-62-45.7-29.9 28.8c-3.3 3.3-6.1 6.1-12.5 6.1l4.4-63.1 114.9-103.8c5-4.4-1.1-6.9-7.7-2.5l-142.3 89.4-61.2-19.1c-13.3-4.2-13.5-13.3 2.8-19.7l239.1-92.2c11.1-4.2 20.8 2.7 17.2 15.9z"/>
+                        </svg>
+                        <div class="sosmed-text-group">
+                            <span>Telegram</span>
+                            <span class="sosmed-synopsis">Hubungi saya atau ikuti channel Telegram.</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="toolbar" id="gmail-toolbar">
+            <h2 id="gmail-toolbar-header">Gmail Dot Variations</h2>
+            <div class="gmail-content" id="gmail-content">
+                <div class="input-group">
+                    <input type="email" id="base-gmail-input" placeholder="yourname@gmail.com" class="text-input">
+                    <button id="generate-gmail-btn" class="action-btn">Hasilkan</button>
+                </div>
+                <div class="generated-emails-list" id="generated-emails-list">
+                    </div>
+                <div id="gmail-total-count-display" class="gmail-total-count-display"></div>
+                <button id="copy-all-gmail-btn" class="action-btn copy-all-gmail-btn hide">Salin Semua</button>
+            </div>
+        </div>
+
+        <div class="toolbar" id="gemini-ai-toolbar">
+            <h2 id="gemini-ai-toolbar-header">Gemini AI</h2>
+            <div class="gemini-ai-content" id="gemini-ai-content">
+                <textarea id="gemini-prompt-input" placeholder="Ketik prompt Anda di sini..."></textarea>
+                <button id="gemini-generate-btn" class="action-btn">Hasilkan Respons</button>
+                <div class="gemini-ai-response" id="gemini-ai-response">  Respons AI akan muncul di sini.
+                </div>
+            </div>
+        </div>
+
+        <div class="toolbar" id="buy-nokos-toolbar">
+            <h2 id="buy-nokos-toolbar-header">Buy Nokos</h2>
+            <div class="buy-nokos-content" id="buy-nokos-content">
+                <div class="form-group">
+                    <label for="item-name-input">Wa Pembeli:</label>
+                    <input type="text" id="item-name-input" placeholder="Nomor Wa Untuk di hubungi">
+                </div>
+                <div class="form-group">
+                    <label for="country-select">Pilih Negara:</label>
+                    <select id="country-select">
+                        <option value="ID">Indonesia</option>
+                        <option value="MY">Malaysia</option>
+                        <option value="PH">Filipina</option>
+                        <option value="RU">Russia</option>
+                        <option value="CN">China</option>
+                        <option value="FR">Francis</option>
+                        <option value="US">USA</option>
+                        <option value="AU">Australia</option>
+                        <option value="IN">India</option>
+                        <option value="NL">Belanda</option>
+                        <option value="TR">Turki</option>
+                        <option value="TH">Thailand</option>
+                        <option value="GB">Inggris</option>
+                        <option value="CO">Colombia</option>
+                        <option value="DE">Jerman</option>
+                        <option value="BR">Brazil</option>
+                        <option value="JP">Jepang</option>
+                        <option value="BT">Bhutan</option>
+                        <option value="KZ">Khazastan</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="platform-select">Pilih Platform:</label>
+                    <select id="platform-select">
+                        <option value="WhatsApp">WhatsApp</option>
+                        <option value="Telegram">Telegram</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="quantity-input">Jumlah:</label>
+                    <input type="number" id="quantity-input" value="1" min="1" max="10">
+                </div>
+
+                <div class="price-display">
+                    Harga Total: <span id="total-price">Rp 0</span>
+                </div>
+
+                <div class="payment-methods">
+                    <label>Metode Pembayaran:</label>
+                    <div class="payment-method-item">
+                        <input type="radio" id="shopeepay" name="payment-method" value="Shopeepay" checked>
+                        <label for="shopeepay">Shopeepay</label>
+                    </div>
+                    <div class="payment-method-item">
+                        <input type="radio" id="dana" name="payment-method" value="Dana">
+                        <label for="dana">Dana</label>
+                    </div>
+                    <div class="payment-method-item">
+                        <input type="radio" id="gopay" name="payment-method" value="Gopay">
+                        <label for="gopay">Gopay</label>
+                    </div>
+                    <div class="payment-method-item">
+                        <input type="radio" id="qris" name="payment-method" value="QRIS">
+                        <label for="qris">QRIS</label>
+                    </div>
+                </div>
+
+                <div class="payment-info" id="payment-info">
+                    Kirim pembayaran ke nomor: <br><strong>Coming Soon</strong>
+                </div>
+
+                <div class="qris-display-container" id="qris-display-container">
+                    <p>Scan QR Code di bawah untuk pembayaran:</p>
+                    <img id="qris-image" src="https://placehold.co/200x200/000000/FFFFFF?text=Kode+QRIS" alt="QRIS Code">
+                    <p>Pastikan jumlah pembayaran sesuai.</p>
+                </div>
+                <div class="form-group">
+                    <label for="proof-photo-input">Unggah Bukti Foto Pembayaran:</label>
+                    <input type="file" id="proof-photo-input" accept="image/*">
+                    <img id="photo-preview" class="image-preview" src="#" alt="Pratinjau Foto Bukti Pembayaran">
+                </div>
+
+                <button id="send-proof-btn" class="whatsapp-proof-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor">
+                        <path d="M380.9 97.1C339.4 55.6 283.9 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 222-99.6 222-222 0-60.3-23.3-116.9-65.4-158.9zM223.9 448H224c34.9 0 69-10.1 98.6-29.5l7.1-4.2 84.2 22-22-84.2-4.2-7.1c19.4-29.5 29.5-63.6 29.5-98.6 0-101.9-82.8-184.7-184.7-184.7-101.9 0-184.7 82.8-184.7 184.7 0 101.8 82.9 184.6 184.7 184.6zm-61.7-110.8c-4.1-2.3-24.5-12.1-28.3-13.5-3.8-1.4-6.5-2.3-9.2 2.3-2.7 4.6-10.5 13.5-12.7 16.2-2.3 2.3-4.6 2.5-8.5.2-3.9-2.3-16.4-6-31.2-19.3-11.5-10.3-19.3-23.1-21.5-26.8-2.3-3.8-.2-3.6 2-5.9 1.8-1.8 4.1-4.6 6.5-6.9 2.3-2.3 3.1-4.1 4.6-6.5 1.5-2.3.8-4.3-.4-6.5-1.2-2.3-9.2-22.1-12.7-30.2-3.6-7.9-7.3-6.7-10.1-6.7-2.7 0-5.9-.4-9.2-.4-3.2 0-8.5 1.2-13 5.9-4.5 4.6-17.5 17.1-17.5 41.7 0 24.6 18 48.3 20.5 51.9 2.5 3.6 34.1 52.3 82.4 73.1 24.7 10.5 44.1 16.9 59.5 21.8 21.3 6.9 38.3 5.7 52.9 3.5 14.5-2.3 35.5-14.5 40.7-28.6 5.3-14 5.3-26 3.8-28.6-1.4-2.5-5.3-4-11.7-7.1z"/>
+                    </svg>
+                    Kirim Bukti Pembayaran
+                </button>
+            </div>
+        </div>
+
+        <!-- New: Video & Audio Downloader Toolbar -->
+        <div class="toolbar" id="downloader-toolbar">
+            <h2 id="downloader-toolbar-header">Video & Audio Downloader</h2>
+            <div class="downloader-content" id="downloader-content">
+                <input type="text" id="downloader-url-input" placeholder="Masukkan URL Video/Audio" class="text-input">
+                <button id="fetch-download-btn" class="action-btn">Ambil Link Unduh</button>
+                <div class="download-options" id="download-options">
+                    <!-- Download options will be displayed here -->
+                    <div style="color: #aaa; text-align: center; padding: 10px;">Masukkan URL untuk mendapatkan pilihan unduh.</div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="music-player-container" id="music-player-container">
+            <div class="song-selector-container">
+                <label for="song-selector">Pilih Lagu:</label>
+                <select id="song-selector" class="text-input">
+                    <option value="-1">-- Pilih Lagu --</option>
+                </select>
+            </div>
+
+            <div class="playback-mode-controls">
+                <button id="sequential-btn" class="control-btn"></button>
+                <button id="repeat-one-btn" class="control-btn"></button>
+                <button id="shuffle-btn" class="control-btn"></button>
+            </div>
+            <ul class="playlist" id="playlist">
+                </ul>
+        </div>
+
+        <div class="synopsis-container" id="synopsis-container">
+            <h3 id="synopsis-title">Sinopsis Lagu</h3>
+            <p class="synopsis-text" id="synopsis-text">Pilih lagu dari playlist untuk melihat sinopsisnya.</p>
+            <div class="spotify-link">
+                <a href="#" id="spotify-link" target="_blank">Dengarkan di Spotify</a>
+            </div>
+        </div>
+
+        <div id="mode-tooltip" class="mode-tooltip"></div>
+
+    </div> <audio id="audio-player"></audio>
+
+    <!-- Modals area (existing modals) -->
+    <div id="gmail-explanation-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Tentang Gmail Dot Variations</h3>
+            <p>Gmail mengabaikan titik-titik (dots) dalam alamat email. Ini berarti alamat seperti <code>nama.saya@gmail.com</code>, <code>nama.s.aya@gmail.com</code>, dan <code>namasaya@gmail.com</code> semuanya akan terkirim ke kotak masuk yang sama.</p>
+            <ul>
+                <li>Mendaftar ke layanan yang berbeda menggunakan variasi alamat email Anda untuk melacak siapa yang menjual data data Anda.</li>
+                <li>Membuat filter email yang lebih mudah diatur di Gmail.</li>
+            </ul>
+            <p>Masukkan alamat Gmail dasar Anda di bawah ini untuk melihat semua variasi titik yang mungkin.</p>
+            <button id="close-gmail-explanation-btn" class="action-btn">Tutup & Lanjutkan</button>
+        </div>
+    </div>
+
+    <div id="gemini-ai-explanation-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Tentang Gemini AI</h3>
+            <p>Gemini AI adalah model bahasa besar (Large Language Model) yang dikembangkan oleh Google. Anda dapat berinteraksi dengannya dengan memberikan prompt atau pertanyaan, dan AI akan mencoba memberikan respons yang relevan dan informatif.</p>
+            <ul>
+                <li>Mendapatkan jawaban atas pertanyaan.</li>
+                <li>Menulis teks kreatif (puisi, kode, skrip, karya musik, email, surat, dll).</li>
+                <li>Menerjemahkan bahasa.</li>
+                <li>Meringkas informasi.</li>
+                <li>Dan banyak lagi!</li>
+            </ul>
+            <p>Coba berikan prompt di bawah ini dan lihat apa yang dihasilkan Gemini AI!</p>
+            <button id="close-gemini-ai-explanation-btn" class="action-btn">Tutup & Lanjutkan</button>
+        </div>
+    </div>
+
+    <div id="buy-nokos-explanation-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Tentang Buy Nokos</h3>
+            <p>Fitur "Buy Nokos" memungkinkan Anda untuk membeli nomor virtual (Nokos) dari berbagai negara untuk berbagai platform seperti WhatsApp atau Telegram.</p>
+            <ul>
+                <li><strong>Nomor Virtual (Nokos):</strong> Nomor telepon yang tidak terikat pada kartu SIM fisik, digunakan untuk verifikasi akun online.</li>
+                <li><strong>Pilih Negara:</strong> Pilih negara asal nomor virtual yang Anda inginkan. Harga bervariasi tergantung negara.</li>
+                <li><strong>Pilih Platform:</strong> Tentukan platform (WhatsApp atau Telegram) yang akan Anda gunakan dengan nomor ini.</li>
+                <li><strong>Jumlah:</strong> Tentukan berapa banyak nomor yang ingin Anda beli.</li>
+                <li><strong>Metode Pembayaran:</strong> Pilih metode pembayaran yang tersedia (Shopeepay, Dana, Gopay, QRIS).</li>
+                <li><strong>Unggah Bukti Pembayaran:</strong> Setelah melakukan pembayaran, unggah tangkapan layar atau foto bukti pembayaran Anda.</li>
+                <li><strong>Kirim Bukti Pembayaran:</strong> Klik tombol ini untuk mengirim konfirmasi pembayaran Anda melalui WhatsApp.</li>
+            </ul>
+            <p>Fitur ini cocok untuk kebutuhan verifikasi akun atau pendaftaran layanan yang memerlukan nomor telepon.</p>
+            <button id="close-buy-nokos-explanation-btn" class="action-btn">Tutup & Lanjutkan</button>
+        </div>
+    </div>
+
+    <!-- New: Video & Audio Downloader Explanation Modal -->
+    <div id="downloader-explanation-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Tentang Video & Audio Downloader</h3>
+            <p>Fitur ini memungkinkan Anda untuk mencoba mengambil tautan unduhan untuk video atau audio dari berbagai platform online. Cukup masukkan URL video atau audio yang ingin Anda unduh.</p>
+            <p><strong>Catatan Penting:</strong> Fitur ini memerlukan dukungan backend server yang terintegrasi dengan alat pengunduh seperti <code>yt-dlp</code> atau <code>youtube-dl</code>. Fungsionalitas pengunduhan langsung dari browser ke situs pihak ketiga sangat dibatasi karena alasan keamanan. Jika Anda melihat pesan "Gagal mengambil link unduh", pastikan konfigurasi server backend Anda sudah benar.</p>
+            <button id="close-downloader-explanation-btn" class="action-btn">Tutup & Lanjutkan</button>
+        </div>
+    </div>
+
+
+    <!-- Payment Confirmation Modal -->
+    <div id="payment-confirm-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Konfirmasi Pembayaran</h3>
+            <p>Anda akan mengirimkan bukti pembayaran ini. Pastikan semua detail sudah benar.</p>
+            <div class="payment-details">
+                <p><strong>Wa Pembeli:</strong> <span id="modal-item-name"></span></p>
+                <p><strong>Negara:</strong> <span id="modal-country"></span></p>
+                <p><strong>Platform:</strong> <span id="modal-platform"></span></p>
+                <p><strong>Jumlah:</strong> <span id="modal-quantity"></span></p>
+                <p><strong>Total Harga:</strong> <span id="modal-total-price"></span></p>
+                <p><strong>Metode Pembayaran:</strong> <span id="modal-payment-method"></span></p>
+            </div>
+            <div class="button-group">
+                <button id="confirm-send-btn" class="action-btn">Kirim Sekarang</button>
+                <button id="cancel-send-btn" class="action-btn cancel-btn">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generic Status Modal (Success/Failure) -->
+    <div id="status-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="status-modal-title"></h3>
+            <p id="status-modal-message" class="message"></p>
+            <button id="status-modal-ok-btn" class="action-btn">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Logika Pemutar Musik ---
+        const audioPlayer = document.getElementById('audio-player');
+        const playlistElement = document.getElementById('playlist');
+        const synopsisContainer = document.getElementById('synopsis-container');
+        const synopsisTitle = document.getElementById('synopsis-title');
+        const synopsisText = document.getElementById('synopsis-text');
+        const spotifyLink = document.getElementById('spotify-link');
+        const musicPlayerContainer = document.getElementById('music-player-container');
+        const playlistToolbar = document.getElementById('playlist-toolbar');
+        const playlistToolbarHeader = document.getElementById('playlist-toolbar-header');
+        const sosmedToolbar = document.getElementById('sosmed-toolbar');
+        const sosmedContent = document.getElementById('sosmed-content');
+        const sosmedToolbarHeader = document.getElementById('sosmed-toolbar-header');
+
+        // Elemen Gmail Dot Variations
+        const gmailToolbar = document.getElementById('gmail-toolbar');
+        const gmailToolbarHeader = document.getElementById('gmail-toolbar-header');
+        const gmailContent = document.getElementById('gmail-content');
+        const baseGmailInput = document.getElementById('base-gmail-input');
+        const generateGmailBtn = document.getElementById('generate-gmail-btn');
+        const generatedEmailsList = document.getElementById('generated-emails-list');
+        const copyAllGmailBtn = document.getElementById('copy-all-gmail-btn');
+        const gmailTotalCountDisplay = document.getElementById('gmail-total-count-display');
+
+        // Elemen modal baru
+        const gmailExplanationModal = document.getElementById('gmail-explanation-modal');
+        const closeGmailExplanationBtn = document.getElementById('close-gmail-explanation-btn');
+        let gmailPopUpShown = false;
+
+        // Elemen Gemini AI
+        const geminiAIToolbar = document.getElementById('gemini-ai-toolbar');
+        const geminiAIToolbarHeader = document.getElementById('gemini-ai-toolbar-header');
+        const geminiAIContent = document.getElementById('gemini-ai-content');
+        const geminiPromptInput = document.getElementById('gemini-prompt-input');
+        const geminiGenerateBtn = document.getElementById('gemini-generate-btn');
+        const geminiAIResponse = document.getElementById('gemini-ai-response');
+        const geminiAIExplanationModal = document.getElementById('gemini-ai-explanation-modal');
+        const closeGeminiAIExplanationBtn = document.getElementById('close-gemini-ai-explanation-btn');
+        let geminiAIPopUpShown = false;
+
+        // Elemen Buy Nokos
+        const buyNokosToolbar = document.getElementById('buy-nokos-toolbar');
+        const buyNokosToolbarHeader = document.getElementById('buy-nokos-toolbar-header');
+        const buyNokosContent = document.getElementById('buy-nokos-content');
+        const itemNameInput = document.getElementById('item-name-input');
+        const countrySelect = document.getElementById('country-select');
+        const platformSelect = document.getElementById('platform-select');
+        const quantityInput = document.getElementById('quantity-input');
+        const totalPriceSpan = document.getElementById('total-price');
+        const proofPhotoInput = document.getElementById('proof-photo-input');
+        const photoPreview = document.getElementById('photo-preview');
+        const sendProofBtn = document.getElementById('send-proof-btn');
+        const paymentMethodsRadios = document.querySelectorAll('input[name="payment-method"]');
+        const paymentInfoDiv = document.getElementById('payment-info');
+        const qrisDisplayContainer = document.getElementById('qris-display-container');
+        const buyNokosExplanationModal = document.getElementById('buy-nokos-explanation-modal');
+        const closeBuyNokosExplanationBtn = document.getElementById('close-buy-nokos-explanation-btn');
+        let buyNokosPopUpShown = false;
+
+        // Elemen Video & Audio Downloader
+        const downloaderToolbar = document.getElementById('downloader-toolbar');
+        const downloaderToolbarHeader = document.getElementById('downloader-toolbar-header');
+        const downloaderContent = document.getElementById('downloader-content');
+        const downloaderUrlInput = document.getElementById('downloader-url-input');
+        const fetchDownloadBtn = document.getElementById('fetch-download-btn');
+        const downloadOptionsDiv = document.getElementById('download-options');
+        const downloaderExplanationModal = document.getElementById('downloader-explanation-modal'); // New
+        const closeDownloaderExplanationBtn = document.getElementById('close-downloader-explanation-btn'); // New
+        let downloaderPopUpShown = false; // New
+
+        // Payment Confirmation Modal elements (modalProofStatus and modalProofPreview no longer used in modal)
+        const paymentConfirmModal = document.getElementById('payment-confirm-modal');
+        const modalItemName = document.getElementById('modal-item-name');
+        const modalCountry = document.getElementById('modal-country');
+        const modalPlatform = document.getElementById('modal-platform');
+        const modalQuantity = document.getElementById('modal-quantity');
+        const modalTotalPrice = document.getElementById('modal-total-price');
+        const modalPaymentMethod = document.getElementById('modal-payment-method');
+        const confirmSendBtn = document.getElementById('confirm-send-btn');
+        const cancelSendBtn = document.getElementById('cancel-send-btn');
+
+        // Generic Status Modal elements
+        const statusModal = document.getElementById('status-modal');
+        const statusModalTitle = document.getElementById('status-modal-title');
+        const statusModalMessage = document.getElementById('status-modal-message');
+        const statusModalOkBtn = document.getElementById('status-modal-ok-btn');
+
+        // Global variable to store scroll position
+        let scrollPosition = 0;
+
+        // Function to disable body scrolling without zoom out
+        function disableBodyScroll() {
+            scrollPosition = window.pageYOffset;
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${scrollPosition}px`;
+            document.body.style.width = '100%';
+            document.body.classList.add('no-scroll');
+        }
+
+        // Function to enable body scrolling
+        function enableBodyScroll() {
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
+            document.body.classList.remove('no-scroll');
+            window.scrollTo(0, scrollPosition);
+        }
+
+
+        let sequentialBtn, repeatOneBtn, shuffleBtn;
+        let modeTooltip, tooltipTimeout;
+
+        const playIcon = '►';
+        const pauseIcon = '❚❚';
+
+        const sequentialIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></svg>`;
+        const repeatOneIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v3zm-4-2V9h-1.5v4.5H10V9H8.5v4.5H7V9H5.5v6h11z"/></svg>`;
+        const shuffleIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M14.83 4.89l1.41 1.41L12 10.59l-4.24-4.24-1.41 1.41L10.59 12l-4.24 4.24 1.41 1.41L12 13.41l4.24 4.24 1.41-1.41L13.41 12l4.24-4.24zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>`;
+        let playbackMode = 'sequential';
+        const songSelector = document.getElementById('song-selector');
+
+        const songs = [
+            { title: 'Serpihan Hati', artist: 'Utopia', src: 'serpihan.mp3', synopsis: '"Serpihan Hati" dari Utopia menceritakan tentang rasa sakit hati seorang wanita yang tidak bisa melupakan orang yang ia cintai karena orang itu akan menikah dengan orang lain. Lagu ini menggambarkan kesedihan dan perjuangan seseorang untuk menerima kenyataan bahwa orang yang dicintai harus merelakan sahabatnya menikah.', spotifyLink: 'https://open.spotify.com/track/4b1kSgvZk3yfOkYrRD8utB' },
+            { title: 'Salahkah Kita', artist: 'Robinhood', src: 'salahkahkita.mp3', synopsis: 'Sebuah balada romantis yang menceritakan dilema cinta terlarang atau hubungan yang rumit, di mana kedua belah pihak mempertanyakan apakah perasaan mereka itu salah meskipun saling mencintai.', spotifyLink: 'https://open.spotify.com/track/4JyvXo5T0hK76UeROKcniE' },
+            { title: 'Kau Masih Kekasihku', artist: 'NaFF', src: 'kaumasihkekasihku.mp3', synopsis: '"Kau Masih Kekasihku" oleh Naff menceritakan tentang kerinduan mendalam seseorang kepada mantan kekasihnya. Lagu ini menggambarkan perasaan seseorang yang masih menyimpan harapan dan kasih sayang terhadap orang yang sudah pergi. Meskipun sudah terpisah, perasaan itu masih membara dan sulit untuk dilupakan. ', spotifyLink: 'https://open.spotify.com/track/4bf1MapeofdB3XKUqDMUOm' },
+            { title: 'Rumah ke Rumah', artist: 'Hindia', src: 'rumahkerumah.mp3', synopsis: 'Lagu "Rumah ke Rumah" oleh Hindia (Baskara Putra) adalah sebuah refleksi tentang perjalanan hidup, pencarian jati diri, dan makna "rumah" yang lebih dari sekadar tempat fisik, melainkan juga tentang menemukan kedamaian dan tujuan.', spotifyLink: 'https://open.spotify.com/track/2wAiFWjRupWmnDkQcu91MF' },
+            {
+                title: 'Tak Seindah Cinta Yang Semestinya',
+                artist: 'NaFF',
+                src: 'takseindahyangsemestinya.mp3',
+                synopsis: 'lagu "Tak Seindah Cinta yang Semestinya" karya Naff menceritakan tentang perasaan tidak puas dan kecewa dalam sebuah hubungan cinta. Lagu ini menggambarkan bagaimana seseorang menyadari bahwa cinta yang dialaminya tidak sehebat atau semestinya seperti yang mereka harapkan, dan juga bagaimana mereka berusaha untuk menerima kenyataan tersebut.',
+                spotifyLink: 'https://open.spotify.com/track/5DJilCqGJFPyTpXyYGzOL5'
+            },
+            {
+                title: 'Untungnya',
+                artist: 'Bernadya',
+                src: 'untungnya.mp3',
+                synopsis: 'Lagu "Untungnya Hidup Harus Tetap Berjalan" oleh Bernadya bercerita tentang refleksi seorang individu yang telah melewati masa-masa sulit dalam hidupnya. Lagu ini menggambarkan perjalanan emosional seseorang yang menghadapi tantangan, ketidakpastian, dan kesulitan, namun pada akhirnya menemukan makna dan pelajaran dari pengalaman tersebut.',
+                spotifyLink: 'https://open.spotify.com/track/2gcMYiZzzmzoF8PPAfL3IO'
+            },
+            {
+                title: 'Monolog',
+                artist: 'Pamungkas',
+                src: 'monolog.mp3',
+                synopsis: '"Monolog Pamungkas" adalah sebuah lagu yang menceritakan tentang seseorang yang sedang merenungkan hubungannya dengan kekasih, meskipun hubungan tersebut penuh dengan tantangan. Lagu ini mengeksplorasi pertanyaan tentang mengapa mereka masih bersama, bukan karena terlanjur lama bersama, tetapi karena perasaan yang sama seperti saat pertama kali bertemu. ',
+                spotifyLink: 'https://open.spotify.com/track/1zu5ZpnrSArdoaT6Qq3yo9'
+            }
+        ];
+
+        const originalSongsOrder = [...songs];
+        let currentSongIndex = -1;
+        let isPlaying = false;
+        let intervalId;
+        let shuffledIndices = [];
+        let shuffleIndex = 0;
+
+        function updatePlaybackModeButtons() {
+            sequentialBtn.classList.remove('active');
+            repeatOneBtn.classList.remove('active');
+            shuffleBtn.classList.remove('active');
+            sequentialBtn.innerHTML = sequentialIcon;
+            repeatOneBtn.innerHTML = repeatOneIcon;
+            shuffleBtn.innerHTML = shuffleIcon;
+            if (playbackMode === 'sequential') sequentialBtn.classList.add('active');
+            else if (playbackMode === 'repeatOne') repeatOneBtn.classList.add('active');
+            else if (playbackMode === 'shuffle') shuffleBtn.classList.add('active');
+        }
+
+        function showTooltip(text, buttonElement) {
+            clearTimeout(tooltipTimeout);
+            modeTooltip.textContent = text;
+            modeTooltip.classList.add('show');
+            const rect = buttonElement.getBoundingClientRect();
+            const wrapperRect = document.querySelector('.main-content-wrapper').getBoundingClientRect();
+            const tooltipLeft = rect.left + (rect.width / 2) - wrapperRect.left;
+            modeTooltip.style.opacity = '0';
+            modeTooltip.style.visibility = 'visible';
+            const tooltipHeight = modeTooltip.offsetHeight;
+            modeTooltip.style.opacity = '';
+            modeTooltip.style.visibility = '';
+            const pointerHeight = 8;
+            const gap = 5;
+            const tooltipTop = (rect.top - wrapperRect.top) - tooltipHeight - pointerHeight - gap;
+            modeTooltip.style.left = `${tooltipLeft}px`;
+            modeTooltip.style.top = `${tooltipTop}px`;
+            modeTooltip.style.transform = `translateX(-50%)`;
+            tooltipTimeout = setTimeout(() => modeTooltip.classList.remove('show'), 1500);
+        }
+
+        function shuffleArray(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        function updateProgressBar() {
+            const activeSongItem = playlistElement.firstElementChild;
+            if (activeSongItem && parseInt(activeSongItem.getAttribute('data-index'), 10) === currentSongIndex) {
+                const progressBar = activeSongItem.querySelector('.progress-bar');
+                const currentTimeSpan = activeSongItem.querySelector('.current-time');
+                const totalDurationSpan = activeSongItem.querySelector('.total-duration');
+                if (audioPlayer.duration && isFinite(audioPlayer.duration)) {
+                    const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                    progressBar.value = audioPlayer.currentTime;
+                    progressBar.style.setProperty('--progress-value', `${progress}%`);
+                    currentTimeSpan.textContent = formatTime(audioPlayer.currentTime);
+                    if (totalDurationSpan.textContent === '0:00' || totalDurationSpan.textContent === 'NaN:NaN') {
+                         totalDurationSpan.textContent = formatTime(audioPlayer.duration);
+                    }
+                } else {
+                    progressBar.value = 0;
+                    progressBar.style.setProperty('--progress-value', `0%`);
+                    currentTimeSpan.textContent = '0:00';
+                    if (totalDurationSpan) totalDurationSpan.textContent = '0:00';
+                }
+            }
+        }
+
+        function loadSong(index) {
+            if (index === -1) {
+                audioPlayer.src = '';
+                audioPlayer.load();
+                isPlaying = false;
+                clearInterval(intervalId);
+                synopsisContainer.classList.remove('show');
+                playlistElement.innerHTML = '';
+                playlistElement.classList.remove('show-list');
+                currentSongIndex = -1;
+                return;
+            }
+            if (index !== currentSongIndex) {
+                if (isPlaying) {
+                    audioPlayer.pause();
+                    isPlaying = false;
+                    clearInterval(intervalId);
+                }
+                currentSongIndex = index;
+                audioPlayer.src = songs[currentSongIndex].src;
+                audioPlayer.load();
+            }
+            renderSingleSong(songs[currentSongIndex], currentSongIndex);
+            updateSynopsis(songs[currentSongIndex]);
+            playlistElement.classList.add('show-list');
+        }
+
+        function playSong() {
+            if (currentSongIndex === -1) {
+                console.warn("Tidak ada lagu yang dipilih untuk diputar.");
+                return;
+            }
+            audioPlayer.play().then(() => {
+                isPlaying = true;
+                clearInterval(intervalId);
+                intervalId = setInterval(updateProgressBar, 1000);
+                if (musicPlayerContainer.classList.contains('show')) {
+                    synopsisContainer.classList.add('show');
+                }
+                const activeSongItem = playlistElement.firstElementChild;
+                if (activeSongItem && parseInt(activeSongItem.getAttribute('data-index'),10) === currentSongIndex) {
+                    activeSongItem.classList.add('active');
+                    activeSongItem.querySelector('.play-pause-btn').innerHTML = pauseIcon;
+                }
+            }).catch(e => {
+                console.error("Error memutar audio: Pastikan file audio (.mp3) ada di folder 'audio/' yang terletak di direktori yang sama dengan file HTML ini. Detail error:", e);
+                isPlaying = false;
+                clearInterval(intervalId);
+                if (musicPlayerContainer.classList.contains('show')) {
+                    synopsisContainer.classList.remove('show');
+                }
+                const activeSongItem = playlistElement.firstElementChild;
+                if (activeSongItem && parseInt(activeSongItem.getAttribute('data-index'),10) === currentSongIndex) {
+                    activeSongItem.classList.remove('active');
+                    activeSongItem.querySelector('.play-pause-btn').innerHTML = playIcon;
+                }
+            });
+        }
+
+        function pauseSong() {
+            audioPlayer.pause();
+            isPlaying = false;
+            clearInterval(intervalId);
+            const activeSongItem = playlistElement.firstElementChild;
+            if (activeSongItem && parseInt(activeSongItem.getAttribute('data-index'),10) === currentSongIndex) {
+                activeSongItem.classList.remove('active');
+                activeSongItem.querySelector('.play-pause-btn').innerHTML = playIcon;
+            }
+        }
+
+        function togglePlayPause() {
+            if (currentSongIndex === -1) return;
+            if (isPlaying) pauseSong();
+            else playSong();
+        }
+
+        function updateSynopsis(song) {
+            synopsisTitle.textContent = song.title;
+            synopsisText.textContent = song.synopsis;
+            spotifyLink.href = song.spotifyLink;
+        }
+
+        audioPlayer.addEventListener('ended', () => {
+            let nextSongIndex;
+            if (playbackMode === 'sequential') {
+                nextSongIndex = (currentSongIndex + 1);
+                if (nextSongIndex >= songs.length) {
+                    nextSongIndex = 0;
+                }
+            } else if (playbackMode === 'repeatOne') {
+                nextSongIndex = currentSongIndex; audioPlayer.currentTime = 0;
+            } else if (playbackMode === 'shuffle') {
+                shuffleIndex = (shuffleIndex + 1) % shuffledIndices.length;
+                nextSongIndex = shuffledIndices[shuffleIndex];
+            }
+            if (songs[nextSongIndex]) {
+                songSelector.value = nextSongIndex;
+                loadSong(nextSongIndex);
+                playSong();
+            } else {
+                isPlaying = false; clearInterval(intervalId);
+                if (musicPlayerContainer.classList.contains('show')) {
+                    synopsisContainer.classList.remove('show');
+                    playlistElement.classList.remove('show-list');
+                    playlistElement.innerHTML = '';
+                }
+                currentSongIndex = -1; songSelector.value = -1;
+                console.warn("Tidak dapat menemukan lagu berikutnya, pemutaran dihentikan.");
+            }
+        });
+
+        audioPlayer.addEventListener('loadedmetadata', () => {
+            const activeSongItem = playlistElement.firstElementChild;
+            if (activeSongItem && parseInt(activeSongItem.getAttribute('data-index'), 10) === currentSongIndex) {
+                const progressBar = activeSongItem.querySelector('.progress-bar');
+                const totalDurationSpan = activeSongItem.querySelector('.total-duration');
+                if (isFinite(audioPlayer.duration)) {
+                    if (progressBar) progressBar.max = audioPlayer.duration;
+                    if (totalDurationSpan) totalDurationSpan.textContent = formatTime(audioPlayer.duration);
+                } else {
+                    console.warn(`Lagu ${songs[currentSongIndex].title}: Durasi tidak valid (${audioPlayer.duration}). Progress bar mungkin tidak berfungsi dengan benar.`);
+                    if (progressBar) progressBar.max = 0;
+                    if (totalDurationSpan) totalDurationSpan.textContent = '0:00';
+                }
+                updateProgressBar();
+            }
+        });
+
+        function renderSingleSong(song, originalIndex) {
+            playlistElement.innerHTML = '';
+            const li = document.createElement('li');
+            li.classList.add('song-item');
+            li.setAttribute('data-index', originalIndex);
+            li.innerHTML = `
+                <div class="song-main-content">
+                    <div class="song-info">
+                        <div class="song-title">${song.title}</div>
+                        <div class="song-artist">${song.artist}</div>
+                    </div>
+                    <div class="song-progress-area">
+                        <input type="range" class="progress-bar" value="0" min="0" max="0" step="0.1">
+                        <div class="time-duration">
+                            <span class="current-time">0:00</span> / <span class="total-duration">0:00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="play-pause-btn">${isPlaying && currentSongIndex === originalIndex ? pauseIcon : playIcon}</button>
+                </div>
+            `;
+            li.addEventListener('click', (event) => {
+                if (!event.target.classList.contains('progress-bar')) {
+                    if (originalIndex === currentSongIndex) togglePlayPause();
+                    else { songSelector.value = originalIndex; loadSong(originalIndex); playSong(); }
+                }
+            });
+            li.querySelector('.play-pause-btn').addEventListener('click', (event) => {
+                event.stopPropagation(); togglePlayPause();
+            });
+            const progressBar = li.querySelector('.progress-bar');
+            progressBar.addEventListener('input', (event) => {
+                const itemIndex = parseInt(li.getAttribute('data-index'), 10);
+                if (itemIndex === currentSongIndex) {
+                    const currentMax = parseFloat(event.target.max);
+                    if (isFinite(currentMax) && currentMax > 0) {
+                        audioPlayer.currentTime = parseFloat(event.target.value);
+                    } else {
+                        console.warn(`Scrubbing diabaikan untuk lagu ${itemIndex}: progressBar.max tidak valid (${event.target.max})`);
+                    }
+                    updateProgressBar();
+                }
+            });
+            if (originalIndex === currentSongIndex && isFinite(audioPlayer.duration) && audioPlayer.duration > 0) {
+                progressBar.max = audioPlayer.duration;
+            }
+            updateProgressBar();
+            playlistElement.appendChild(li);
+        }
+
+        function initializePlaylistUI() { playlistElement.innerHTML = ''; }
+        function populateSongSelector() {
+            songSelector.innerHTML = '<option value="-1">-- Pilih Lagu --</option>';
+            songs.forEach((song, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${song.title} - ${song.artist}`;
+                songSelector.appendChild(option);
+            });
+        }
+        function selectSongFromDropdown(index) {
+            if (!musicPlayerContainer.classList.contains('show')) {
+                 musicPlayerContainer.classList.add('show');
+            }
+            if (index === -1) {
+                if (isPlaying) pauseSong();
+                loadSong(-1); currentSongIndex = -1; return;
+            }
+            loadSong(index);
+            if (musicPlayerContainer.classList.contains('show')) {
+                updateSynopsis(songs[index]);
+                synopsisContainer.classList.add('show');
+            }
+        }
+
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                console.log('Teks disalin ke clipboard');
+            } catch (err) {
+                console.error('Gagal menyalin teks: ', err);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function getDotVariations(username) {
+            const normalizedUsername = username.replace(/\./g, '');
+            if (!normalizedUsername) return [];
+            const variations = new Set();
+            variations.add(normalizedUsername); // Add the version without any dots first
+            const n = normalizedUsername.length;
+
+            for (let i = 0; i < (1 << (n - 1)); i++) { // Iterate 2^(n-1) times
+                let currentVariation = "";
+                currentVariation += normalizedUsername[0];
+                for (let j = 0; j < n - 1; j++) {
+                    if ((i >> j) & 1) { // If j-th bit is set
+                        currentVariation += ".";
+                    }
+                    currentVariation += normalizedUsername[j + 1];
+                }
+                variations.add(currentVariation);
+            }
+            return Array.from(variations);
+        }
+
+
+        function generateAndDisplayGmailVariations() {
+            console.log("Fungsi generateAndDisplayGmailVariations dipanggil"); // DEBUG
+            const fullEmail = baseGmailInput.value.trim();
+            generatedEmailsList.innerHTML = '';
+            copyAllGmailBtn.classList.add('hide');
+            gmailTotalCountDisplay.textContent = '';
+
+            if (!fullEmail) {
+                generatedEmailsList.innerHTML = '<div style="color: #aaa; text-align: center; padding: 10px;">Silakan masukkan alamat Gmail.</div>';
+                return;
+            }
+
+            const parts = fullEmail.split('@');
+            if (parts.length !== 2 || !parts[1].toLowerCase().startsWith('gmail.com')) { // MODIFIED: toLowerCase() for domain check
+                generatedEmailsList.innerHTML = '<div style="color: #aaa; text-align: center; padding: 10px;">Silakan masukkan alamat Gmail yang valid (contoh: namaanda@gmail.com).</div>';
+                return;
+            }
+
+            const username = parts[0];
+            const domain = '@' + parts[1];
+            const dotVariations = getDotVariations(username);
+
+            if (dotVariations.length === 0) {
+                generatedEmailsList.innerHTML = '<div style="color: #aaa; text-align: center; padding: 10px;">Tidak ada variasi yang ditemukan untuk nama pengguna ini.</div>';
+                return;
+            }
+
+            let allEmailsText = "";
+            dotVariations.forEach(variation => {
+                const fullVariationEmail = variation + domain;
+                allEmailsText += fullVariationEmail + "\n";
+                const emailItem = document.createElement('div');
+                emailItem.classList.add('generated-email-item');
+                emailItem.innerHTML = `<span class="email-text">${fullVariationEmail}</span><button class="copy-btn">Salin</button>`;
+                const copyBtn = emailItem.querySelector('.copy-btn');
+                copyBtn.addEventListener('click', () => {
+                    console.log("Tombol salin individu diklik untuk:", fullVariationEmail); // DEBUG
+                    copyToClipboard(fullVariationEmail);
+                    copyBtn.textContent = 'Tersalin!';
+                    setTimeout(() => copyBtn.textContent = 'Salin', 1500);
+                });
+                generatedEmailsList.appendChild(emailItem);
+            });
+
+            gmailTotalCountDisplay.textContent = `Total: ${dotVariations.length} variasi`;
+
+            if (dotVariations.length > 0) {
+                copyAllGmailBtn.classList.remove('hide');
+                copyAllGmailBtn.onclick = () => {
+                    console.log("Tombol Salin Semua diklik"); // DEBUG
+                    copyToClipboard(allEmailsText.trim());
+                    copyAllGmailBtn.textContent = 'Semua Tersalin!';
+                    setTimeout(() => copyAllGmailBtn.textContent = 'Salin Semua', 1500);
+                };
+            }
+        }
+
+        const nokosPrices = {
+            'ID': { 'WhatsApp': 5000, 'Telegram': 5000 }, 'MY': { 'WhatsApp': 22000, 'Telegram': 22000 },
+            'PH': { 'WhatsApp': 5000, 'Telegram': 5000 }, 'RU': { 'WhatsApp': 12000, 'Telegram': 12000 },
+            'CN': { 'WhatsApp': 18000, 'Telegram': 18000 }, 'FR': { 'WhatsApp': 130000, 'Telegram': 130000 },
+            'US': { 'WhatsApp': 50000, 'Telegram': 50000 }, 'AU': { 'WhatsApp': 53000, 'Telegram': 53000 },
+            'IN': { 'WhatsApp': 14000, 'Telegram': 14000 }, 'NL': { 'WhatsApp': 28000, 'Telegram': 28000 },
+            'TR': { 'WhatsApp': 25000, 'Telegram': 25000 }, 'TH': { 'WhatsApp': 9000, 'Telegram': 9000 },
+            'GB': { 'WhatsApp': 10000, 'Telegram': 10000 }, 'CO': { 'WhatsApp': 10000, 'Telegram': 10000 },
+            'DE': { 'WhatsApp': 35000, 'Telegram': 35000 }, 'BR': { 'WhatsApp': 20000, 'Telegram': 20000 },
+            'JP': { 'WhatsApp': 140000, 'Telegram': 140000 }, 'BT': { 'WhatsApp': 10000, 'Telegram': 10000 },
+            'KZ': { 'WhatsApp': 38000, 'Telegram': 38000 }
+        };
+        async function fetchPricesFromVirtuSIM(apiKey) { return nokosPrices; }
+
+        function updateNokosTotalPrice() {
+            const country = countrySelect.value;
+            const platform = platformSelect.value;
+            const quantity = parseInt(quantityInput.value, 10);
+            if (isNaN(quantity) || quantity < 1) {
+                totalPriceSpan.textContent = 'Rp 0'; return;
+            }
+            const basePrice = nokosPrices[country] ? nokosPrices[country][platform] : 0;
+            const total = basePrice * quantity;
+            totalPriceSpan.textContent = `Rp ${total.toLocaleString('id-ID')}`;
+        }
+
+        function handlePaymentMethodDisplay() {
+            const selectedMethod = document.querySelector('input[name="payment-method"]:checked').value;
+            console.log("Buy Nokos: Metode pembayaran berubah ke", selectedMethod); // DEBUG
+            if (selectedMethod === 'QRIS') {
+                paymentInfoDiv.style.display = 'none';
+                qrisDisplayContainer.style.display = 'flex';
+            } else {
+                paymentInfoDiv.style.display = 'block';
+                qrisDisplayContainer.style.display = 'none';
+            }
+        }
+
+        // Fungsi untuk menampilkan pesan status di modal status generik
+        function showStatusModal(title, message, isError = false) {
+            statusModalTitle.textContent = title;
+            statusModalMessage.textContent = message;
+            statusModal.classList.remove('success', 'error'); // Hapus class sebelumnya
+            if (isError) {
+                statusModal.classList.add('error');
+            } else {
+                statusModal.classList.add('success');
+            }
+            statusModal.classList.add('show');
+            disableBodyScroll(); // Disable scroll saat modal muncul
+
+            // HILANGKAN: Atur agar modal tertutup otomatis setelah beberapa detik
+            // setTimeout(() => {
+            //     statusModal.classList.remove('show');
+            //     enableBodyScroll(); // Enable scroll saat modal hilang
+            // }, 3000); 
+        }
+
+
+        // Fungsi yang benar-benar mengirim data ke server PHP
+        async function sendProofToPhpServer() {
+            const itemNameVal = itemNameInput.value.trim() || "Item tidak disebutkan";
+            const country = countrySelect.options[countrySelect.selectedIndex].text;
+            const platform = platformSelect.value;
+            const quantity = quantityInput.value;
+            const totalPrice = totalPriceSpan.textContent;
+            const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+            const proofFile = proofPhotoInput.files[0];
+            const recipientNumber = '081511652007'; // Nomor WhatsApp penerima di sisi server PHP
+
+            // Tutup modal konfirmasi terlebih dahulu
+            paymentConfirmModal.classList.remove('show');
+            // Disable scroll tetap aktif karena akan segera muncul modal status
+
+            // Tampilkan pesan loading di modal status
+            showStatusModal('Memproses...', 'Sedang mengirim bukti pembayaran Anda. Mohon tunggu.', false);
+            confirmSendBtn.disabled = true; // Nonaktifkan tombol saat mengirim
+            cancelSendBtn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('itemName', itemNameVal);
+            formData.append('country', country);
+            formData.append('platform', platform);
+            formData.append('quantity', quantity);
+            formData.append('totalPrice', totalPrice);
+            formData.append('paymentMethod', paymentMethod);
+            formData.append('recipientNumber', recipientNumber);
+            if (proofFile) {
+                formData.append('proofPhoto', proofFile);
+            }
+
+            try {
+                // Ganti 'send_whatsapp.php' dengan path ke skrip PHP Anda
+                const response = await fetch('send_whatsapp.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    if (result.status === 'success') {
+                        showStatusModal('Berhasil!', 'Bukti pembayaran dikirim, tunggu chat dari admin. Hubungi admin (6281511652007) segera jika tidak mendapat rincian lebih lanjut!', false);
+                        // Bersihkan formulir setelah sukses
+                        itemNameInput.value = '';
+                        countrySelect.value = 'ID';
+                        platformSelect.value = 'WhatsApp';
+                        quantityInput.value = '1';
+                        proofPhotoInput.value = '';
+                        photoPreview.src = '#';
+                        photoPreview.style.display = 'none';
+                        updateNokosTotalPrice();
+                    } else {
+                        showStatusModal('Gagal!', `Gagal mengirim bukti pembayaran: ${result.message}`, true);
+                    }
+                } else {
+                    showStatusModal('Error Server!', `Terjadi kesalahan server: ${result.message || response.statusText}`, true);
+                }
+            } catch (error) {
+                console.error('Error saat mengirim bukti pembayaran:', error);
+                showStatusModal('Error Jaringan!', `Terjadi kesalahan jaringan: ${error.message}`, true);
+            } finally {
+                confirmSendBtn.disabled = false;
+                cancelSendBtn.disabled = false;
+                // Scroll akan di-enable HANYA KETIKA TOMBOL OK DI TEKAN
+            }
+        }
+
+
+        // Fungsi untuk menampilkan modal konfirmasi pembayaran
+        function showPaymentConfirmationModal() {
+            const itemNameVal = itemNameInput.value.trim() || "Item tidak disebutkan";
+            const countryText = countrySelect.options[countrySelect.selectedIndex].text;
+            const platformVal = platformSelect.value;
+            const quantityVal = quantityInput.value;
+            const totalPriceVal = totalPriceSpan.textContent;
+            const paymentMethodVal = document.querySelector('input[name="payment-method"]:checked').value;
+            const proofFile = proofPhotoInput.files[0];
+
+            if (!proofFile) {
+                // Menggunakan modal status untuk pesan error validasi awal
+                showStatusModal('Error Input!', 'Mohon unggah bukti foto pembayaran sebelum melanjutkan.', true);
+                return;
+            }
+
+            // Isi detail ke dalam modal
+            modalItemName.textContent = itemNameVal;
+            modalCountry.textContent = countryText;
+            modalPlatform.textContent = platformVal;
+            modalQuantity.textContent = quantityVal;
+            modalTotalPrice.textContent = totalPriceVal;
+            modalPaymentMethod.textContent = paymentMethodVal;
+
+            paymentConfirmModal.classList.add('show');
+            disableBodyScroll(); // Disable scroll saat modal muncul
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            sequentialBtn = document.getElementById('sequential-btn');
+            repeatOneBtn = document.getElementById('repeat-one-btn');
+            shuffleBtn = document.getElementById('shuffle-btn');
+            modeTooltip = document.getElementById('mode-tooltip');
+            sequentialBtn.innerHTML = sequentialIcon;
+            repeatOneBtn.innerHTML = repeatOneIcon;
+            shuffleBtn.innerHTML = shuffleIcon;
+            initializePlaylistUI();
+            populateSongSelector();
+            updatePlaybackModeButtons();
+
+            sequentialBtn.addEventListener('click', () => { playbackMode = 'sequential'; updatePlaybackModeButtons(); showTooltip('Urut', sequentialBtn); });
+            repeatOneBtn.addEventListener('click', () => { playbackMode = 'repeatOne'; updatePlaybackModeButtons(); showTooltip('Ulangi Lagu', repeatOneBtn); });
+            shuffleBtn.addEventListener('click', () => { playbackMode = 'shuffle'; shuffledIndices = Array.from({ length: songs.length }, (_, i) => i); shuffleArray(shuffledIndices); shuffleIndex = 0; updatePlaybackModeButtons(); showTooltip('Acak', shuffleBtn);});
+            songSelector.addEventListener('change', (event) => { const selectedIndex = parseInt(event.target.value, 10); selectSongFromDropdown(selectedIndex); });
+
+            function hideAllContentAreas() {
+                const musicPlayerWasShowing = musicPlayerContainer.classList.contains('show');
+                musicPlayerContainer.classList.remove('show');
+                sosmedContent.classList.remove('show');
+                gmailContent.classList.remove('show');
+                geminiAIContent.classList.remove('show');
+                buyNokosContent.classList.remove('show');
+                downloaderContent.classList.remove('show'); // Hide downloader content
+                gmailExplanationModal.classList.remove('show');
+                geminiAIExplanationModal.classList.remove('show');
+                buyNokosExplanationModal.classList.remove('show');
+                downloaderExplanationModal.classList.remove('show'); // Hide downloader explanation modal
+                paymentConfirmModal.classList.remove('show');
+                statusModal.classList.remove('show'); // Pastikan juga modal status tertutup
+                enableBodyScroll(); // Pastikan scroll di-enable saat keluar dari semua toolbar/modal
+
+                if (musicPlayerWasShowing) {
+                    synopsisContainer.classList.remove('show');
+                }
+            }
+
+            function showAllToolbarHeaders() {
+                allToolbars.forEach(tb => tb.classList.remove('hide'));
+            }
+
+            function handleToolbarClick(clickedToolbarHeaderElem, contentToShow, associatedToolbarDiv) {
+                // Check if any modal is currently active (explanation, confirmation, or status)
+                const isModalActive = gmailExplanationModal.classList.contains('show') ||
+                                    geminiAIExplanationModal.classList.contains('show') ||
+                                    buyNokosExplanationModal.classList.contains('show') ||
+                                    downloaderExplanationModal.classList.contains('show') || // Check downloader explanation modal
+                                    paymentConfirmModal.classList.contains('show') ||
+                                    statusModal.classList.contains('show');
+
+                // If currently showing content AND no modal is active, then hide everything and enable scroll
+                if (contentToShow.classList.contains('show') && !isModalActive) {
+                    hideAllContentAreas(); // This will enableBodyScroll()
+                    showAllToolbarHeaders();
+                    return;
+                }
+
+                // If a modal is active, or if we're opening a new content area:
+                // First, hide all existing content areas and modals.
+                // Call hideAllContentAreas to also ensure any currently disabled scroll is re-enabled first.
+                // Then, disable scroll again if a new modal/content area is being opened that requires it.
+                hideAllContentAreas(); // This call will enableBodyScroll()
+                showAllToolbarHeaders(); // show all toolbars first
+
+                // Then, proceed to show the requested content/modal
+                if (associatedToolbarDiv === gmailToolbar) {
+                    if (!gmailPopUpShown) {
+                        gmailExplanationModal.classList.add('show');
+                        disableBodyScroll(); // Disable scroll for explanation modal
+                    } else {
+                        gmailContent.classList.add('show');
+                        // No need to disable body scroll for general content area if it's scrollable internally
+                    }
+                } else if (associatedToolbarDiv === geminiAIToolbar) {
+                    if (!geminiAIPopUpShown) {
+                        geminiAIExplanationModal.classList.add('show');
+                        disableBodyScroll(); // Disable scroll for explanation modal
+                    } else {
+                        geminiAIContent.classList.add('show');
+                    }
+                } else if (associatedToolbarDiv === buyNokosToolbar) {
+                    if (!buyNokosPopUpShown) {
+                        buyNokosExplanationModal.classList.add('show');
+                        disableBodyScroll(); // Disable scroll for explanation modal
+                    } else {
+                        buyNokosContent.classList.add('show');
+                        updateNokosTotalPrice();
+                        handlePaymentMethodDisplay();
+                    }
+                } else if (associatedToolbarDiv === downloaderToolbar) { // New downloader logic
+                     if (!downloaderPopUpShown) {
+                        downloaderExplanationModal.classList.add('show');
+                        disableBodyScroll(); // Disable scroll for explanation modal
+                    } else {
+                        downloaderContent.classList.add('show');
+                    }
+                }
+                else if (associatedToolbarDiv === playlistToolbar) {
+                     musicPlayerContainer.classList.add('show');
+                    if (currentSongIndex !== -1) {
+                        songSelector.value = currentSongIndex;
+                        loadSong(currentSongIndex);
+                        if (isPlaying) {
+                            const activeSongItem = playlistElement.firstElementChild;
+                            if (activeSongItem && parseInt(activeSongItem.getAttribute('data-index'),10) === currentSongIndex) {
+                                activeSongItem.classList.add('active');
+                                activeSongItem.querySelector('.play-pause-btn').innerHTML = pauseIcon;
+                            }
+                        }
+                        if(musicPlayerContainer.classList.contains('show')) synopsisContainer.classList.add('show');
+                    } else if (songs.length > 0) {
+                        songSelector.value = 0; selectSongFromDropdown(0);
+                        if(musicPlayerContainer.classList.contains('show')) synopsisContainer.classList.add('show');
+                    } else {
+                        songSelector.value = -1; synopsisContainer.classList.remove('show');
+                        playlistElement.innerHTML = ''; playlistElement.classList.remove('show-list');
+                    }
+                } else {
+                    contentToShow.classList.add('show');
+                }
+
+                // Hide other toolbars after determining what to show
+                allToolbars.forEach(tb => {
+                    if (tb !== associatedToolbarDiv) {
+                        tb.classList.add('hide');
+                    }
+                });
+            }
+
+
+            const allToolbars = [playlistToolbar, sosmedToolbar, gmailToolbar, geminiAIToolbar, buyNokosToolbar, downloaderToolbar]; // Added downloaderToolbar
+
+            playlistToolbarHeader.addEventListener('click', () => handleToolbarClick(playlistToolbarHeader, musicPlayerContainer, playlistToolbar));
+            sosmedToolbarHeader.addEventListener('click', () => handleToolbarClick(sosmedToolbarHeader, sosmedContent, sosmedToolbar));
+            gmailToolbarHeader.addEventListener('click', () => handleToolbarClick(gmailToolbarHeader, gmailContent, gmailToolbar));
+            geminiAIToolbarHeader.addEventListener('click', () => handleToolbarClick(geminiAIToolbarHeader, geminiAIContent, geminiAIToolbar));
+            buyNokosToolbarHeader.addEventListener('click', () => handleToolbarClick(buyNokosToolbarHeader, buyNokosContent, buyNokosToolbar));
+            downloaderToolbarHeader.addEventListener('click', () => handleToolbarClick(downloaderToolbarHeader, downloaderContent, downloaderToolbar)); // New handler
+
+            closeGmailExplanationBtn.addEventListener('click', () => {
+                gmailExplanationModal.classList.remove('show');
+                gmailContent.classList.add('show');
+                enableBodyScroll(); // Enable scroll saat modal penjelasan tertutup
+                gmailPopUpShown = true;
+            });
+            closeGeminiAIExplanationBtn.addEventListener('click', () => {
+                geminiAIExplanationModal.classList.remove('show');
+                geminiAIContent.classList.add('show');
+                enableBodyScroll(); // Enable scroll saat modal penjelasan tertutup
+                geminiAIPopUpShown = true;
+            });
+            closeBuyNokosExplanationBtn.addEventListener('click', () => {
+                buyNokosExplanationModal.classList.remove('show');
+                buyNokosContent.classList.add('show');
+                updateNokosTotalPrice();
+                handlePaymentMethodDisplay();
+                enableBodyScroll(); // Enable scroll saat modal penjelasan tertutup
+                buyNokosPopUpShown = true;
+            });
+            // New: Downloader explanation modal close button
+            closeDownloaderExplanationBtn.addEventListener('click', () => {
+                downloaderExplanationModal.classList.remove('show');
+                downloaderContent.classList.add('show');
+                enableBodyScroll();
+                downloaderPopUpShown = true;
+            });
+
+
+            if (generateGmailBtn) {
+                generateGmailBtn.addEventListener('click', () => {
+                    console.log("Tombol 'Hasilkan' Gmail diklik."); // DEBUG
+                    generateAndDisplayGmailVariations();
+                });
+            } else { console.error("Tombol 'generateGmailBtn' tidak ditemukan."); }
+
+            if (baseGmailInput) {
+                 baseGmailInput.addEventListener('keypress', (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        console.log("Enter ditekan pada input Gmail."); // DEBUG
+                        if(generateGmailBtn) generateGmailBtn.click();
+                    }
+                });
+            } else { console.error("Input 'baseGmailInput' tidak ditemukan."); }
+
+
+            if (geminiGenerateBtn) {
+                geminiGenerateBtn.addEventListener('click', async () => {
+                    console.log("Tombol 'Hasilkan Respons' Gemini AI diklik."); // DEBUG
+                    const prompt = geminiPromptInput.value.trim();
+                    if (!prompt) {
+                        geminiAIResponse.textContent = 'Mohon masukkan prompt.';
+                        return;
+                    }
+                    geminiAIResponse.textContent = '';
+                    geminiAIResponse.classList.add('loading');
+                    try {
+                        let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                        const payload = { contents: chatHistory };
+                        const apiKey = "AIzaSyCEa3iQqjewukjC7z3ta1QgRAaVcSL9bTo";
+                        if (!apiKey) {
+                            geminiAIResponse.textContent = 'Kesalahan: Kunci API Gemini belum diatur.';
+                            console.error('Error: Kunci API Gemini belum diatur.');
+                            geminiAIResponse.classList.remove('loading');
+                            return;
+                        }
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                        const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+
+                        if (!response.ok) {
+                            let errorText = response.statusText;
+                            try {
+                                const errorData = await response.json();
+                                console.error('API Error Response:', errorData);
+                                errorText = errorData.error ? errorData.error.message : response.statusText;
+                            } catch (e) {
+                                console.error('Gagal mem-parse respons error API sebagai JSON:', e);
+                            }
+                            geminiAIResponse.textContent = `Gagal mendapatkan respons dari Gemini AI: ${errorText}`;
+                            geminiAIResponse.classList.remove('loading');
+                            return;
+                        }
+
+                        const result = await response.json();
+                        if (result.candidates && result.candidates[0]?.content?.parts?.[0]) {
+                            geminiAIResponse.textContent = result.candidates[0].content.parts[0].text;
+                        } else {
+                            geminiAIResponse.textContent = 'Gagal mendapatkan respons dari Gemini AI. Struktur respons tidak terduga.';
+                            console.error('Struktur respons Gemini AI tidak terduga:', result);
+                        }
+                    } catch (error) {
+                        geminiAIResponse.textContent = 'Terjadi kesalahan saat menghubungi Gemini AI.';
+                        console.error('Error memanggil Gemini AI:', error);
+                    } finally {
+                        geminiAIResponse.classList.remove('loading');
+                    }
+                });
+            } else { console.error("Tombol 'geminiGenerateBtn' tidak ditemukan."); }
+
+            if(geminiPromptInput) {
+                geminiPromptInput.addEventListener('keypress', (event) => {
+                    if (event.key === 'Enter' && !event.shiftKey) {
+                        event.preventDefault();
+                         if(geminiGenerateBtn) geminiGenerateBtn.click();
+                    }
+                });
+            }
+
+
+            // Debugging dan event listeners untuk Buy Nokos
+            if (itemNameInput) {
+                console.log("Buy Nokos: itemNameInput ditemukan");
+                itemNameInput.addEventListener('input',() => {
+                    console.log("Buy Nokos: itemNameInput berubah"); // DEBUG
+                    updateNokosTotalPrice();
+                });
+            } else { console.error("Buy Nokos: itemNameInput TIDAK ditemukan"); }
+
+            if (countrySelect) {
+                console.log("Buy Nokos: countrySelect ditemukan");
+                countrySelect.addEventListener('change', () => {
+                     console.log("Buy Nokos: countrySelect berubah"); // DEBUG
+                    updateNokosTotalPrice();
+                });
+            } else { console.error("Buy Nokos: countrySelect TIDAK ditemukan"); }
+
+            if (platformSelect) {
+                console.log("Buy Nokos: platformSelect ditemukan");
+                platformSelect.addEventListener('change', () => {
+                    console.log("Buy Nokos: platformSelect berubah"); // DEBUG
+                    updateNokosTotalPrice();
+                });
+            } else { console.error("Buy Nokos: platformSelect TIDAK ditemukan"); }
+
+            if (quantityInput) {
+                console.log("Buy Nokos: quantityInput ditemukan");
+                quantityInput.addEventListener('input', () => {
+                    console.log("Buy Nokos: quantityInput berubah"); // DEBUG
+                    updateNokosTotalPrice();
+                });
+            } else { console.error("Buy Nokos: quantityInput TIDAK ditemukan"); }
+
+            if (proofPhotoInput) {
+                console.log("Buy Nokos: proofPhotoInput ditemukan");
+                proofPhotoInput.addEventListener('change', (event) => {
+                    console.log("Buy Nokos: proofPhotoInput berubah"); // DEBUG
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            photoPreview.src = e.target.result;
+                            photoPreview.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        photoPreview.src = '#';
+                        photoPreview.style.display = 'none';
+                    }
+                });
+            } else { console.error("Buy Nokos: proofPhotoInput TIDAK ditemukan"); }
+
+            if (paymentMethodsRadios.length > 0) {
+                console.log("Buy Nokos: paymentMethodsRadios ditemukan", paymentMethodsRadios.length);
+                paymentMethodsRadios.forEach(radio => {
+                    radio.addEventListener('change', () => {
+                        console.log("Buy Nokos: Metode pembayaran berubah ke", radio.value); // DEBUG
+                        handlePaymentMethodDisplay();
+                    });
+                });
+            } else { console.error("Buy Nokos: paymentMethodsRadios TIDAK ditemukan atau kosong"); }
+
+            if (sendProofBtn) {
+                console.log("Buy Nokos: sendProofBtn ditemukan");
+                // Mengubah event listener untuk menampilkan modal konfirmasi
+                sendProofBtn.addEventListener('click', showPaymentConfirmationModal);
+            } else {
+                console.error("Buy Nokos: sendProofBtn TIDAK ditemukan");
+            }
+
+            // Event listener untuk tombol di dalam modal konfirmasi
+            if (confirmSendBtn) {
+                confirmSendBtn.addEventListener('click', sendProofToPhpServer);
+            }
+            if (cancelSendBtn) {
+                cancelSendBtn.addEventListener('click', () => {
+                    paymentConfirmModal.classList.remove('show');
+                    enableBodyScroll(); // Enable scroll saat modal konfirmasi ditutup secara manual
+                });
+            }
+
+            // Event listener untuk tombol OK di modal status generik
+            if (statusModalOkBtn) {
+                statusModalOkBtn.addEventListener('click', () => {
+                    statusModal.classList.remove('show');
+                    enableBodyScroll(); // Enable scroll saat modal status ditutup secara manual
+                });
+            }
+
+            // Logic for Video & Audio Downloader (updated to fetch from PHP)
+            if (fetchDownloadBtn) {
+                fetchDownloadBtn.addEventListener('click', async () => {
+                    const url = downloaderUrlInput.value.trim();
+                    downloadOptionsDiv.innerHTML = '<div style="color: #aaa; text-align: center; padding: 10px;">Mengambil link unduh...</div>';
+
+                    if (!url) {
+                        downloadOptionsDiv.innerHTML = '<div style="color: #aaa; text-align: center; padding: 10px;">Mohon masukkan URL video/audio.</div>';
+                        return;
+                    }
+
+                    const formData = new FormData();
+                    formData.append('url', url);
+
+                    try {
+                        const response = await fetch('download.php', { // Call the PHP script
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok && result.status === 'success') {
+                            if (result.links && result.links.length > 0) {
+                                downloadOptionsDiv.innerHTML = ''; // Clear loading message
+                                result.links.forEach(item => {
+                                    const option = document.createElement('div');
+                                    option.classList.add('download-option-item');
+                                    option.innerHTML = `
+                                        <span>${item.label}</span>
+                                        <a href="${item.url}" target="_blank" download>Unduh</a>
+                                    `;
+                                    downloadOptionsDiv.appendChild(option);
+                                });
+                            } else {
+                                downloadOptionsDiv.innerHTML = '<div style="color: #aaa; text-align: center; padding: 10px;">Tidak ada link unduh ditemukan untuk URL ini.</div>';
+                            }
+                        } else {
+                            const errorMessage = result.message || 'Terjadi kesalahan tidak dikenal.';
+                            downloadOptionsDiv.innerHTML = `<div style="color: #ff6b6b; text-align: center; padding: 10px;">Gagal mengambil link unduh: ${errorMessage}</div>`;
+                        }
+
+                    } catch (error) {
+                        console.error('Error fetching download links:', error);
+                        downloadOptionsDiv.innerHTML = '<div style="color: #ff6b6b; text-align: center; padding: 10px;">Terjadi kesalahan jaringan atau server tidak merespons.</div>';
+                    }
+                });
+            }
+
+
+            handlePaymentMethodDisplay();
+        });
+
+        // --- Logika Efek Hujan dan Petir ---
+        const canvas = document.getElementById('rain-canvas');
+        const ctx = canvas.getContext('2d');
+        let drops = []; const numDrops = 300; let lastLightningTime = 0;
+        const lightningIntervalMin = 5000; const lightningIntervalMax = 15000;
+        let nextLightningTime = Date.now() + Math.random() * (lightningIntervalMax - lightningIntervalMin) + lightningIntervalMin;
+
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initRain(); }
+        function initRain() { drops = []; for (let i = 0; i < numDrops; i++) { drops.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, length: Math.random() * 20 + 10, speed: Math.random() * 5 + 3, opacity: Math.random() * 0.5 + 0.3 }); } }
+        function drawRain() { ctx.clearRect(0, 0, canvas.width, canvas.height); for (let i = 0; i < drops.length; i++) { const drop = drops[i]; drop.y += drop.speed; drop.x += drop.speed * 0.1; if (drop.y > canvas.height) { drop.y = -drop.length; drop.x = Math.random() * canvas.width; } ctx.beginPath(); ctx.moveTo(drop.x, drop.y); ctx.lineTo(drop.x + drop.length * 0.1, drop.y + drop.length); ctx.strokeStyle = `rgba(173, 216, 230, ${drop.opacity})`; ctx.lineWidth = 1; ctx.stroke(); } }
+        function handleLightning() { const currentTime = Date.now(); if (currentTime > nextLightningTime) { lastLightningTime = currentTime; const flashDuration = Math.random() * 50 + 50; ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'; ctx.fillRect(0, 0, canvas.width, canvas.height); setTimeout(() => { drawRain(); }, flashDuration); nextLightningTime = currentTime + Math.random() * (lightningIntervalMax - lightningIntervalMin) + lightningIntervalMin; } }
+        function animateRainAndLightning() { drawRain(); handleLightning(); requestAnimationFrame(animateRainAndLightning); }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas(); initRain(); animateRainAndLightning();
+    </script>
+</body>
+</html>
